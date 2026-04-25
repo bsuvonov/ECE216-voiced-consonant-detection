@@ -826,9 +826,19 @@ def plot_per_letter_f1(results: dict[str, dict[str, dict[str, object]]]) -> None
     plt.figure(figsize=(7.8, 4.5))
     for offset, (method_key, label) in zip([-width, 0.0, width], methods):
         values = [results[target][method_key]["metrics"]["f1"] for target in TARGET_PHONEMES]
-        plt.bar(x + offset, values, width=width, label=label)
+        bars = plt.bar(x + offset, values, width=width, label=label)
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(
+                bar.get_x() + bar.get_width() / 2,
+                height + 0.015,
+                f"{100.0 * height:.1f}",
+                ha="center",
+                va="bottom",
+                fontsize=7.3,
+            )
     plt.xticks(x, targets)
-    plt.ylim(0, 1.0)
+    plt.ylim(0, 1.08)
     plt.ylabel("F1 score")
     plt.xlabel("Target consonant")
     plt.title("Per-Letter Detection F1 on the Test Set")
