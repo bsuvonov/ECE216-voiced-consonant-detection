@@ -1,0 +1,107 @@
+Speech Analysis Submission Checklist
+
+Student:
+Bunyod Suvonov and Giorgio Aman Soetomo
+
+Project-policy coverage:
+
+1. Topic selection
+   Speech Analysis: Identification and Detection of Voiced Consonants
+
+2. Implement one or some relevant algorithms
+   Implemented methods:
+   - Global FFT template (MATLAB spectrum method)
+   - MFCC mean-template scan
+   - MFCC + DTW
+   - Local STFT mean-template scan (MATLAB spectrum method)
+   - Local STFT k-NN scan (MATLAB spectrum method)
+   - AI MLP detector
+
+3. Clearly specify models, assumptions, and settings
+   Covered in report:
+   - Problem Formulation and Theory
+   - Approximate phoneme-position prior
+   - Assumptions and preprocessing
+   - Implemented methods table
+
+4. Provide pseudo-code or method structure
+   Covered in report:
+   - Algorithm structures table
+   - Four pseudo-code blocks
+
+5. Include theoretical background / results / analyses
+   Covered in report:
+   - STFT background
+   - MFCC background
+   - DTW background
+   - AI detector formulation
+   - Spectral analysis section
+   - Results and discussion sections
+
+6. Use real or synthetic data
+   Real dataset used:
+   - Speech Commands v0.02
+
+7. Implement and compare several algorithms thoroughly
+   Comparison included:
+   - 6 total methods
+   - overall macro precision / recall / F1 / accuracy table
+   - per-letter comparison figure
+   - method-comparison figure
+   - separate MATLAB run for the FFT/STFT spectrum detectors
+
+8. Write a proper journal-style report
+   Deliverable:
+   - report/main.tex
+   - report/main.pdf
+
+Grading-factor coverage:
+
+1. Completeness and conciseness
+   - Report compiled and organized into abstract, related work, theory, dataset, methods, spectral analysis, results, discussion, and conclusion
+
+2. Discussions of algorithms/methods
+   - Explicit model descriptions, assumptions, decision rules, and pseudo-code
+
+3. Literature survey
+   - Rabiner-Schafer
+   - Davis-Mermelstein
+   - Sakoe-Chiba
+   - Hinton et al.
+   - Sainath-Parada
+   - Warden
+
+4. Theoretical background
+   - STFT
+   - template scanning
+   - MFCC
+   - DTW
+   - binary MLP detector
+
+5. Experiments/comparisons
+   Final macro test metrics:
+   - Global FFT template: F1 67.03%, accuracy 53.57%
+   - MFCC mean-template scan: F1 66.93%, accuracy 52.30%
+   - MFCC + DTW: F1 65.17%, accuracy 52.59%
+   - Local STFT mean-template scan: F1 66.36%, accuracy 51.48%
+   - Local STFT k-NN scan: F1 65.41%, accuracy 51.66%
+   - AI MLP: F1 86.39%, accuracy 86.45%
+
+   Separate MATLAB spectrum-detector run:
+   - Global FFT template: F1 66.68%, accuracy 54.20%
+   - Local STFT mean-template scan: F1 66.55%, accuracy 51.10%
+   - Local STFT k-NN scan: F1 66.84%, accuracy 51.42%
+
+Additional coverage:
+
+1. Group size
+   - Two authors
+
+2. Real dataset
+   - Yes
+
+3. Position-independent letter detection
+   - Yes; the report no longer restricts detection to word onset and instead scans the full active word
+
+4. MATLAB requirement
+   - Yes; corrected MATLAB full-word spectrum script generates FFT/STFT detector metrics, an average local spectrum figure, and an exported classical model

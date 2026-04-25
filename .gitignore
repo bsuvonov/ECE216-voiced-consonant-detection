@@ -1,0 +1,40 @@
+# Datasets and local tool binaries
+data/
+tools/
+
+# MATLAB generated files
+*.asv
+*.fig
+
+# LaTeX build artifacts
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# OS/editor noise
+.DS_Store
+*~
+
+# Source material not needed to reproduce the submitted paper
+lecture-slides/
+project.pdf
+
+# Obsolete figures and metrics from earlier onset-only experiments
+report/figures/accuracy_comparison.png
+report/figures/average_onset_spectra.png
+report/figures/confusion_matrices.png
+report/figures/detection_f1.png
+report/figures/example_spectrograms.png
+report/figures/fullword_average_local_spectra.png
+report/figures/matlab_average_onset_spectra.png
+matlab/run_classical_topic2.m
+results/matlab_classical_metrics.txt
+results/metrics.json
