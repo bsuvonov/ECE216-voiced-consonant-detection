@@ -39,20 +39,26 @@ DTW_BAND_GRID = [1, 2, 3]
 MAX_KNN_BANK = 80
 RNG = np.random.default_rng(0)
 
-TARGET_PHONEMES = ["D", "G", "N", "R"]
-TARGET_LABELS = {"D": "d", "G": "g", "N": "n", "R": "r"}
+TARGET_PHONEMES = ["D", "N", "R", "V"]
+TARGET_LABELS = {"D": "d", "N": "n", "R": "r", "V": "v"}
 
 WORD_PHONEMES = {
+    "backward": ["B", "AE", "K", "W", "ER", "D"],
     "bed": ["B", "EH", "D"],
+    "bird": ["B", "ER", "D"],
     "cat": ["K", "AE", "T"],
     "dog": ["D", "AO", "G"],
     "five": ["F", "AY", "V"],
+    "four": ["F", "AO", "R"],
     "go": ["G", "OW"],
     "house": ["HH", "AW", "S"],
+    "marvin": ["M", "AA", "R", "V", "IH", "N"],
     "no": ["N", "OW"],
+    "on": ["AA", "N"],
     "right": ["R", "AY", "T"],
     "seven": ["S", "EH", "V", "AH", "N"],
     "up": ["AH", "P"],
+    "visual": ["V", "IH", "ZH", "UW", "AH", "L"],
     "wow": ["W", "AW"],
     "yes": ["Y", "EH", "S"],
     "zero": ["Z", "IH", "R", "OW"],
@@ -831,7 +837,7 @@ def example_target_window(cache_item: dict[str, object], word: str, target: str)
 
 def plot_position_examples(cache: dict[str, dict[str, object]], items_by_split: dict[str, list[dict[str, object]]]) -> None:
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    choices = [("bed", "D"), ("dog", "G"), ("seven", "N"), ("zero", "R")]
+    choices = [("bed", "D"), ("seven", "N"), ("zero", "R"), ("visual", "V")]
     figure, axes = plt.subplots(2, 2, figsize=(9.2, 6.2), constrained_layout=True)
     for axis, (word, target) in zip(axes.ravel(), choices):
         item = next(item for item in items_by_split["train"] if item["word"] == word)

@@ -21,7 +21,7 @@ Using Spectrum-Based Methods and an AI Baseline}
 \maketitle
 
 \begin{abstract}
-This paper studies position-independent full-word detection of four voiced consonants, \textit{d}, \textit{g}, \textit{n}, and \textit{r}, using recordings from Speech Commands v0.02. An onset-only formulation is too narrow for letter-presence detection, because the target consonant may appear at the beginning, middle, or end of the word. A 13-keyword benchmark is constructed so that each target consonant has exactly two positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one AI baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide literature and AI comparisons. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 65.48\% and 69.00\%, while the AI baseline reaches 88.06\% macro F1 and 87.81\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
+This paper studies position-independent full-word detection of four voiced consonants, \textit{d}, \textit{n}, \textit{r}, and \textit{v}, using recordings from Speech Commands v0.02. An onset-only formulation is too narrow for letter-presence detection, because the target consonant may appear at the beginning, middle, or end of the word. A 19-keyword benchmark is constructed so that each target consonant has exactly four positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one AI baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide literature and AI comparisons. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 66.18\% and 67.85\%, while the AI baseline reaches 86.25\% macro F1 and 86.46\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
 \end{abstract}
 
 \section{Introduction}
@@ -30,9 +30,9 @@ Speech is a time-domain waveform, but many phonetic cues become much clearer aft
 The critical methodological issue is \emph{position}. A detector that only examines the beginning of a word is valid for \textit{d} in \textit{dog}, but not for \textit{d} in \textit{bed} or \textit{r} in \textit{zero}. Therefore, in this report we study position-independent detection of four voiced consonants:
 \begin{itemize}
     \item \textit{d}: voiced alveolar stop,
-    \item \textit{g}: voiced velar stop,
     \item \textit{n}: voiced nasal stop,
-    \item \textit{r}: voiced liquid.
+    \item \textit{r}: voiced liquid,
+    \item \textit{v}: voiced labiodental fricative.
 \end{itemize}
 
 The study is organized around three questions:
@@ -100,11 +100,11 @@ where $\tilde{z}(x)$ is standardized, $\rho(\cdot)$ is ReLU, and $\sigma(\cdot)$
 
 \section{Dataset and Experimental Setup}
 \subsection{Dataset and Target Selection}
-We use the full Speech Commands v0.02 dataset~\cite{warden2018speech}. From it, we select 13 keywords:
-\textit{bed}, \textit{cat}, \textit{dog}, \textit{five}, \textit{go}, \textit{house}, \textit{no}, \textit{right}, \textit{seven}, \textit{up}, \textit{wow}, \textit{yes}, and \textit{zero}.
-Six of these keywords, \textit{cat}, \textit{five}, \textit{house}, \textit{up}, \textit{wow}, and \textit{yes}, do not contain any of the four target consonants and are included as negative examples. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 4,290 recordings in total. The split is speaker-independent: the hexadecimal speaker hash modulo 100 defines train, validation, and test partitions.
+We use the full Speech Commands v0.02 dataset~\cite{warden2018speech}. From it, we select 19 keywords:
+\textit{backward}, \textit{bed}, \textit{bird}, \textit{cat}, \textit{dog}, \textit{five}, \textit{four}, \textit{go}, \textit{house}, \textit{marvin}, \textit{no}, \textit{on}, \textit{right}, \textit{seven}, \textit{up}, \textit{visual}, \textit{wow}, \textit{yes}, and \textit{zero}.
+Six of these keywords, \textit{cat}, \textit{go}, \textit{house}, \textit{up}, \textit{wow}, and \textit{yes}, do not contain any of the four target consonants and are included as target-free negative examples. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 6,270 recordings in total. The split is speaker-independent: the hexadecimal speaker hash modulo 100 defines train, validation, and test partitions.
 
-Table~\ref{tab:targets} shows the positive keywords for each target consonant. The labels I/M/F denote initial, medial, and final target positions in the approximate pronunciation. The positive keyword design is lexically balanced: each target consonant appears in exactly two selected keyword types. The word \textit{dog} is shared by \textit{d} and \textit{g}, so the benchmark has seven unique target-positive keywords and eight target-positive entries across the four binary detection tasks.
+Table~\ref{tab:targets} shows the positive keywords for each target consonant. The labels I/M/F denote initial, medial, and final target positions in the approximate pronunciation. The positive keyword design is lexically balanced: each target consonant appears in exactly four selected keyword types. Some words contain more than one target consonant, so they can be positive examples for more than one binary detector.
 
 \begin{table*}[t]
     \centering
@@ -114,15 +114,15 @@ Table~\ref{tab:targets} shows the positive keywords for each target consonant. T
         \toprule
         Target & Phonetic role & Positive keywords used for detection \\
         \midrule
-        \textit{d} & voiced alveolar stop & \textit{bed}(F), \textit{dog}(I) \\
-        \textit{g} & voiced velar stop & \textit{dog}(F), \textit{go}(I) \\
-        \textit{n} & voiced nasal stop & \textit{no}(I), \textit{seven}(F) \\
-        \textit{r} & voiced liquid & \textit{right}(I), \textit{zero}(M) \\
+        \textit{d} & voiced alveolar stop & \textit{backward}(F), \textit{bed}(F), \textit{bird}(F), \textit{dog}(I) \\
+        \textit{n} & voiced nasal stop & \textit{marvin}(F), \textit{no}(I), \textit{on}(F), \textit{seven}(F) \\
+        \textit{r} & voiced liquid & \textit{four}(F), \textit{marvin}(M), \textit{right}(I), \textit{zero}(M) \\
+        \textit{v} & voiced labiodental fricative & \textit{five}(F), \textit{marvin}(M), \textit{seven}(M), \textit{visual}(I) \\
         \bottomrule
     \end{tabular}
 \end{table*}
 
-For each target consonant, the word label is converted into a binary presence label using the pronunciation table. For example, \textit{dog} is positive for \textit{d} and \textit{g}, but negative for \textit{n} and \textit{r}. The negative class is sampled from the remaining selected keywords that do not contain that target. The negative examples are subsampled to match the number of positive examples, so every detection problem is balanced. During testing, these labels are used only to score the predictions, not to generate them.
+For each target consonant, the word label is converted into a binary presence label using the pronunciation table. For example, \textit{marvin} is positive for \textit{n}, \textit{r}, and \textit{v}, but negative for \textit{d}. The negative class is sampled from the remaining selected keywords that do not contain that target. The negative examples are subsampled to match the number of positive examples, so every detection problem is balanced. During testing, these labels are used only to score the predictions, not to generate them.
 
 \subsection{Assumptions and Preprocessing}
 The experiments use the following assumptions:
@@ -192,9 +192,9 @@ The algorithms below summarize the implemented pipelines.
 \end{enumerate}
 
 \section{Spectral Analysis}
-Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonants \textit{d} and \textit{g} show different low-to-mid frequency patterns; \textit{n} concentrates more low-frequency energy because of nasal resonance; and \textit{r} has a smoother broadband transition.
+Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonant \textit{d} shows a short transition-like spectrum, \textit{n} concentrates more low-frequency energy because of nasal resonance, \textit{r} has a smoother vowel-like transition, and \textit{v} contributes frication energy from a voiced labiodental constriction.
 
-Figure~\ref{fig:examples} is equally important for validating the corrected task definition. The highlighted windows are not confined to the beginning of the word: \textit{g} is captured at the end of \textit{dog}, \textit{n} at the end of \textit{seven}, and \textit{r} in the middle of \textit{zero}. This is the main methodological difference from an onset-only report.
+Figure~\ref{fig:examples} is equally important for validating the corrected task definition. The highlighted windows are not confined to the beginning of the word: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. This is the main methodological difference from an onset-only report.
 
 \begin{figure}[t]
     \centering
@@ -222,17 +222,17 @@ Table~\ref{tab:overall} reports the average precision, recall, F1, and accuracy 
         \toprule
         Method & Macro precision (\%) & Macro recall (\%) & Macro F1 (\%) & Macro accuracy (\%) \\
         \midrule
-        Global FFT template & 52.14 & 93.33 & 66.56 & 53.07 \\
-        MFCC mean-template scan & 59.21 & 85.83 & 69.00 & 61.20 \\
-        MFCC + DTW & 54.26 & 86.67 & 66.06 & 55.78 \\
-        Local STFT mean-template scan & 56.17 & 84.17 & 66.13 & 56.98 \\
-        Local STFT k-NN scan & 55.15 & 82.40 & 65.48 & 56.72 \\
-        AI MLP & 86.48 & 89.79 & 88.06 & 87.81 \\
+        Global FFT template & 50.38 & 99.22 & 66.82 & 50.73 \\
+        MFCC mean-template scan & 53.12 & 94.64 & 67.85 & 55.03 \\
+        MFCC + DTW & 51.18 & 96.04 & 66.72 & 52.08 \\
+        Local STFT mean-template scan & 51.82 & 94.11 & 66.65 & 52.92 \\
+        Local STFT k-NN scan & 51.87 & 91.82 & 66.18 & 53.15 \\
+        AI MLP & 86.87 & 86.04 & 86.25 & 86.46 \\
         \bottomrule
     \end{tabular}
 \end{table*}
 
-The MATLAB spectrum implementation was also run separately for the FFT/STFT detectors. It gave comparable macro F1 values: 66.91\% for global FFT, 66.09\% for local STFT mean-template scanning, and 65.55\% for local STFT k-NN scanning. These values support the same conclusion as Table~\ref{tab:overall}: classical spectrum scanning is useful for spectral interpretation, but in this benchmark it is less selective than the MLP baseline under weak phoneme alignment.
+The MATLAB spectrum implementation was also run separately for the FFT/STFT detectors. It gave comparable macro F1 values: 66.65\% for global FFT, 66.02\% for local STFT mean-template scanning, and 65.93\% for local STFT k-NN scanning. These values support the same conclusion as Table~\ref{tab:overall}: classical spectrum scanning is useful for spectral interpretation, but in this benchmark it is less selective than the MLP baseline under weak phoneme alignment.
 
 Figure~\ref{fig:overallfig} presents the same comparison graphically. The five classical methods cluster closely together because they all depend on weakly aligned target templates. Once the target is allowed to occur anywhere in the word, coarse positive-template scanning becomes much less selective than in the earlier onset-only formulation.
 
@@ -246,10 +246,10 @@ Figure~\ref{fig:overallfig} presents the same comparison graphically. The five c
 \subsection{Per-Letter Comparison}
 Figure~\ref{fig:perletter} compares one literature-style baseline (MFCC + DTW), one local-spectrum classical detector (STFT k-NN), and the AI baseline on each letter. In the test results, the AI baseline obtains the highest F1 for all four consonants:
 \begin{itemize}
-    \item \textit{d}: 87.21\% F1,
-    \item \textit{g}: 86.84\% F1,
-    \item \textit{n}: 87.24\% F1,
-    \item \textit{r}: 90.95\% F1.
+    \item \textit{d}: 86.39\% F1,
+    \item \textit{n}: 80.63\% F1,
+    \item \textit{r}: 88.98\% F1,
+    \item \textit{v}: 89.00\% F1.
 \end{itemize}
 
 Among the classical methods, performance is especially limited for letters whose target windows are hard to isolate with only word-level supervision. This is expected: the classical detectors know how the target should look locally, but they do not learn a global representation of the entire word.
@@ -268,20 +268,20 @@ The corrected experiments lead to four main conclusions.
 A detector restricted to the word onset would miss valid cases such as \textit{d} in \textit{bed}, \textit{n} in \textit{seven}, or \textit{r} in \textit{zero}. The present report avoids that error by scanning the full active region.
 
 \textbf{2) Weak phoneme alignment is the main bottleneck for classical detectors.}
-The classical methods achieve recall around 82--93\%, but precision only around 52--59\%. They often find a spectrally similar local region somewhere in the word, even when the target consonant is absent. This high-recall/low-precision behavior is exactly what one should expect from positive-template scanning with only approximate target localization.
+The classical methods achieve recall around 92--99\%, but precision only around 50--53\%. They often find a spectrally similar local region somewhere in the word, even when the target consonant is absent. This high-recall/low-precision behavior is exactly what one should expect from positive-template scanning with only approximate target localization.
 
 \textbf{3) Literature baselines and spectrum baselines are both informative.}
 MFCC mean-template and MFCC + DTW are the methods reproduced from the speech-recognition literature. Global FFT, local STFT mean-template, and local STFT k-NN are MATLAB spectrum methods based on direct Fourier analysis. In the full-word setting, none of the classical methods dominates decisively; all are constrained by the same lack of exact phoneme boundaries.
 
 \textbf{4) The AI baseline gives the highest scores in this study.}
-The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. In the measured results, its macro F1 is 88.06\%, compared with roughly 65--69\% for the classical methods, and its precision and recall are more balanced.
+The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. In the measured results, its macro F1 is 86.25\%, compared with roughly 66--68\% for the classical methods, and its precision and recall are more balanced.
 
-There are still limitations. The target timing is approximate rather than forced-aligned, and the balanced design uses only two positive keyword types per target consonant. A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting. Even so, the current design is substantially better aligned with letter-presence detection than an onset-only formulation.
+There are still limitations. The target timing is approximate rather than forced-aligned, and the balanced design uses only four positive keyword types per target consonant. A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting. Even so, the current design is substantially better aligned with letter-presence detection than an onset-only formulation.
 
 \section{Conclusion}
 We analyzed the spectra of four voiced consonants in MATLAB, implemented MATLAB spectrum-based detectors, reproduced literature-style MFCC/DTW baselines, and trained an AI baseline on Speech Commands recordings. The crucial formulation choice was to treat the task as \emph{position-independent} letter detection inside words rather than onset-only classification.
 
-Under that formulation, the five classical detectors all show similar high-recall/low-precision behavior, while the AI MLP gives the highest measured result with 88.06\% macro F1 and 87.81\% macro accuracy. The main scientific lesson is that Fourier-based spectrum tools remain useful for spectral interpretation and baseline detection, but once target timing becomes uncertain, learned whole-word representations can be more robust than weakly aligned local templates.
+Under that formulation, the five classical detectors all show similar high-recall/low-precision behavior, while the AI MLP gives the highest measured result with 86.25\% macro F1 and 86.46\% macro accuracy. The main scientific lesson is that Fourier-based spectrum tools remain useful for spectral interpretation and baseline detection, but once target timing becomes uncertain, learned whole-word representations can be more robust than weakly aligned local templates.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

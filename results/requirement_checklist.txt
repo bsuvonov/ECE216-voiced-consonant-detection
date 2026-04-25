@@ -80,17 +80,17 @@ Grading-factor coverage:
 
 5. Experiments/comparisons
    Final macro test metrics:
-   - Global FFT template: F1 66.56%, accuracy 53.07%
-   - MFCC mean-template scan: F1 69.00%, accuracy 61.20%
-   - MFCC + DTW: F1 66.06%, accuracy 55.78%
-   - Local STFT mean-template scan: F1 66.13%, accuracy 56.98%
-   - Local STFT k-NN scan: F1 65.48%, accuracy 56.72%
-   - AI MLP: F1 88.06%, accuracy 87.81%
+   - Global FFT template: F1 66.82%, accuracy 50.73%
+   - MFCC mean-template scan: F1 67.85%, accuracy 55.03%
+   - MFCC + DTW: F1 66.72%, accuracy 52.08%
+   - Local STFT mean-template scan: F1 66.65%, accuracy 52.92%
+   - Local STFT k-NN scan: F1 66.18%, accuracy 53.15%
+   - AI MLP: F1 86.25%, accuracy 86.46%
 
    Separate MATLAB spectrum-detector run:
-   - Global FFT template: F1 66.91%, accuracy 53.75%
-   - Local STFT mean-template scan: F1 66.09%, accuracy 56.25%
-   - Local STFT k-NN scan: F1 65.55%, accuracy 56.15%
+   - Global FFT template: F1 66.65%, accuracy 51.48%
+   - Local STFT mean-template scan: F1 66.02%, accuracy 51.98%
+   - Local STFT k-NN scan: F1 65.93%, accuracy 52.01%
 
 Additional coverage:
 

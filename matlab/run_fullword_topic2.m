@@ -27,8 +27,8 @@ params.cap.test = 120;
 params.kGrid = [1 3 5 7 9];
 params.maxKnnBank = 80;
 
-targets = {'D', 'G', 'N', 'R'};
-letters = {'d', 'g', 'n', 'r'};
+targets = {'D', 'N', 'R', 'V'};
+letters = {'d', 'n', 'r', 'v'};
 [words, phonemes] = word_phonemes();
 
 items = build_items(dataRoot, words, params);
@@ -79,19 +79,26 @@ disp(fileread(fullfile(resultsDir, 'matlab_fullword_classical_metrics.txt')));
 end
 
 function [words, phonemes] = word_phonemes()
-words = {'bed', 'cat', 'dog', 'five', 'go', 'house', 'no', 'right', ...
-    'seven', 'up', 'wow', 'yes', 'zero'};
+words = {'backward', 'bed', 'bird', 'cat', 'dog', 'five', 'four', 'go', ...
+    'house', 'marvin', 'no', 'on', 'right', 'seven', 'up', 'visual', ...
+    'wow', 'yes', 'zero'};
 phonemes = struct();
+phonemes.backward = {'B', 'AE', 'K', 'W', 'ER', 'D'};
 phonemes.bed = {'B', 'EH', 'D'};
+phonemes.bird = {'B', 'ER', 'D'};
 phonemes.cat = {'K', 'AE', 'T'};
 phonemes.dog = {'D', 'AO', 'G'};
 phonemes.five = {'F', 'AY', 'V'};
+phonemes.four = {'F', 'AO', 'R'};
 phonemes.go = {'G', 'OW'};
 phonemes.house = {'HH', 'AW', 'S'};
+phonemes.marvin = {'M', 'AA', 'R', 'V', 'IH', 'N'};
 phonemes.no = {'N', 'OW'};
+phonemes.on = {'AA', 'N'};
 phonemes.right = {'R', 'AY', 'T'};
 phonemes.seven = {'S', 'EH', 'V', 'AH', 'N'};
 phonemes.up = {'AH', 'P'};
+phonemes.visual = {'V', 'IH', 'ZH', 'UW', 'AH', 'L'};
 phonemes.wow = {'W', 'AW'};
 phonemes.yes = {'Y', 'EH', 'S'};
 phonemes.zero = {'Z', 'IH', 'R', 'OW'};

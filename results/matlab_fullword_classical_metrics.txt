@@ -1,11 +1,11 @@
 MATLAB full-word classical voiced-consonant detection summary
 
-Global FFT template: macro F1=0.6691, macro accuracy=0.5375
-Local STFT mean-template scan: macro F1=0.6609, macro accuracy=0.5625
-Local STFT k-NN scan: macro F1=0.6555, macro accuracy=0.5615
+Global FFT template: macro F1=0.6665, macro accuracy=0.5148
+Local STFT mean-template scan: macro F1=0.6602, macro accuracy=0.5198
+Local STFT k-NN scan: macro F1=0.6593, macro accuracy=0.5201
 
 Per-letter F1
-d: global_fft=0.6617, stft_mean=0.6667, stft_knn=0.6667
-g: global_fft=0.6796, stft_mean=0.6677, stft_knn=0.6360
-n: global_fft=0.6667, stft_mean=0.6601, stft_knn=0.6688
-r: global_fft=0.6685, stft_mean=0.6491, stft_knn=0.6506
+d: global_fft=0.6640, stft_mean=0.6695, stft_knn=0.6667
+n: global_fft=0.6667, stft_mean=0.6364, stft_knn=0.6455
+r: global_fft=0.6685, stft_mean=0.6682, stft_knn=0.6583
+v: global_fft=0.6667, stft_mean=0.6667, stft_knn=0.6667
