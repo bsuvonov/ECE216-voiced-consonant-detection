@@ -33,7 +33,6 @@ report/figures/average_onset_spectra.png
 report/figures/confusion_matrices.png
 report/figures/detection_f1.png
 report/figures/example_spectrograms.png
-report/figures/fullword_average_local_spectra.png
 report/figures/matlab_average_onset_spectra.png
 matlab/run_classical_topic2.m
 results/matlab_classical_metrics.txt
