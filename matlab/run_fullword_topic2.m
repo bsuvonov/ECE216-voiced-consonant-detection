@@ -507,20 +507,23 @@ end
 function plot_average_spectra(path, averageSpectra, letters, sampleRate, nfft)
 freqAxis = linspace(0, sampleRate / 2, nfft / 2 + 1);
 figure('Visible', 'off', 'Color', 'w', 'InvertHardcopy', 'off');
-set(gca, 'Color', 'w');
+axisHandle = axes('Color', 'w', 'XColor', 'k', 'YColor', 'k', ...
+    'GridColor', [0.55 0.55 0.55], 'MinorGridColor', [0.75 0.75 0.75], ...
+    'FontSize', 12, 'LineWidth', 1.0);
 hold on;
 for idx = 1:numel(letters)
     curve = 20 * log10(averageSpectra(idx, :) / max(averageSpectra(idx, :)) + 1e-8);
-    plot(freqAxis, curve, 'LineWidth', 1.6, 'DisplayName', letters{idx});
+    plot(freqAxis, curve, 'LineWidth', 2.0, 'DisplayName', letters{idx});
 end
 xlim([0 4000]);
 ylim([-40 1]);
 grid on;
-xlabel('Frequency (Hz)');
-ylabel('Normalized magnitude (dB)');
-title('MATLAB Average Local Spectra of Target Consonants');
-legend('Location', 'best');
-set(gca, 'Color', 'w');
+xlabel('Frequency (Hz)', 'Color', 'k');
+ylabel('Normalized magnitude (dB)', 'Color', 'k');
+title('MATLAB Average Local Spectra of Target Consonants', 'Color', 'k');
+legendHandle = legend('Location', 'best');
+set(legendHandle, 'TextColor', 'k', 'Color', 'w', 'EdgeColor', 'k');
+set(axisHandle, 'Color', 'w', 'XColor', 'k', 'YColor', 'k');
 saveas(gcf, path);
 close(gcf);
 end
