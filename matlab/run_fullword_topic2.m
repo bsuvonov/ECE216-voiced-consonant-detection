@@ -79,30 +79,18 @@ disp(fileread(fullfile(resultsDir, 'matlab_fullword_classical_metrics.txt')));
 end
 
 function [words, phonemes] = word_phonemes()
-words = {'backward', 'bed', 'bird', 'cat', 'dog', 'down', 'five', 'forward', ...
-    'four', 'go', 'house', 'marvin', 'nine', 'no', 'on', 'one', 'right', ...
-    'seven', 'three', 'tree', 'up', 'wow', 'yes', 'zero'};
+words = {'bed', 'cat', 'dog', 'five', 'go', 'house', 'no', 'right', ...
+    'seven', 'up', 'wow', 'yes', 'zero'};
 phonemes = struct();
-phonemes.backward = {'B', 'AE', 'K', 'W', 'ER', 'D'};
 phonemes.bed = {'B', 'EH', 'D'};
-phonemes.bird = {'B', 'ER', 'D'};
 phonemes.cat = {'K', 'AE', 'T'};
 phonemes.dog = {'D', 'AO', 'G'};
-phonemes.down = {'D', 'AW', 'N'};
 phonemes.five = {'F', 'AY', 'V'};
-phonemes.forward = {'F', 'AO', 'R', 'W', 'ER', 'D'};
-phonemes.four = {'F', 'AO', 'R'};
 phonemes.go = {'G', 'OW'};
 phonemes.house = {'HH', 'AW', 'S'};
-phonemes.marvin = {'M', 'AA', 'R', 'V', 'IH', 'N'};
-phonemes.nine = {'N', 'AY', 'N'};
 phonemes.no = {'N', 'OW'};
-phonemes.on = {'AA', 'N'};
-phonemes.one = {'W', 'AH', 'N'};
 phonemes.right = {'R', 'AY', 'T'};
 phonemes.seven = {'S', 'EH', 'V', 'AH', 'N'};
-phonemes.three = {'TH', 'R', 'IY'};
-phonemes.tree = {'T', 'R', 'IY'};
 phonemes.up = {'AH', 'P'};
 phonemes.wow = {'W', 'AW'};
 phonemes.yes = {'Y', 'EH', 'S'};

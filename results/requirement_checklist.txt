@@ -38,8 +38,8 @@ Project-policy coverage:
    - Spectral analysis section
    - Results and discussion sections
 
-6. Use real or synthetic data
-   Real dataset used:
+6. Use a dataset
+   Dataset used:
    - Speech Commands v0.02
 
 7. Implement and compare several algorithms thoroughly
@@ -80,25 +80,25 @@ Grading-factor coverage:
 
 5. Experiments/comparisons
    Final macro test metrics:
-   - Global FFT template: F1 67.03%, accuracy 53.57%
-   - MFCC mean-template scan: F1 66.93%, accuracy 52.30%
-   - MFCC + DTW: F1 65.17%, accuracy 52.59%
-   - Local STFT mean-template scan: F1 66.36%, accuracy 51.48%
-   - Local STFT k-NN scan: F1 65.41%, accuracy 51.66%
-   - AI MLP: F1 86.39%, accuracy 86.45%
+   - Global FFT template: F1 66.56%, accuracy 53.07%
+   - MFCC mean-template scan: F1 69.00%, accuracy 61.20%
+   - MFCC + DTW: F1 66.06%, accuracy 55.78%
+   - Local STFT mean-template scan: F1 66.13%, accuracy 56.98%
+   - Local STFT k-NN scan: F1 65.48%, accuracy 56.72%
+   - AI MLP: F1 88.06%, accuracy 87.81%
 
    Separate MATLAB spectrum-detector run:
-   - Global FFT template: F1 66.68%, accuracy 54.20%
-   - Local STFT mean-template scan: F1 66.55%, accuracy 51.10%
-   - Local STFT k-NN scan: F1 66.84%, accuracy 51.42%
+   - Global FFT template: F1 66.91%, accuracy 53.75%
+   - Local STFT mean-template scan: F1 66.09%, accuracy 56.25%
+   - Local STFT k-NN scan: F1 65.55%, accuracy 56.15%
 
 Additional coverage:
 
 1. Group size
    - Two authors
 
-2. Real dataset
-   - Yes
+2. Dataset
+   - Speech Commands v0.02
 
 3. Position-independent letter detection
    - Yes; the report no longer restricts detection to word onset and instead scans the full active word

@@ -43,26 +43,15 @@ TARGET_PHONEMES = ["D", "G", "N", "R"]
 TARGET_LABELS = {"D": "d", "G": "g", "N": "n", "R": "r"}
 
 WORD_PHONEMES = {
-    "backward": ["B", "AE", "K", "W", "ER", "D"],
     "bed": ["B", "EH", "D"],
-    "bird": ["B", "ER", "D"],
     "cat": ["K", "AE", "T"],
     "dog": ["D", "AO", "G"],
-    "down": ["D", "AW", "N"],
     "five": ["F", "AY", "V"],
-    "forward": ["F", "AO", "R", "W", "ER", "D"],
-    "four": ["F", "AO", "R"],
     "go": ["G", "OW"],
     "house": ["HH", "AW", "S"],
-    "marvin": ["M", "AA", "R", "V", "IH", "N"],
-    "nine": ["N", "AY", "N"],
     "no": ["N", "OW"],
-    "on": ["AA", "N"],
-    "one": ["W", "AH", "N"],
     "right": ["R", "AY", "T"],
     "seven": ["S", "EH", "V", "AH", "N"],
-    "three": ["TH", "R", "IY"],
-    "tree": ["T", "R", "IY"],
     "up": ["AH", "P"],
     "wow": ["W", "AW"],
     "yes": ["Y", "EH", "S"],
@@ -842,7 +831,7 @@ def example_target_window(cache_item: dict[str, object], word: str, target: str)
 
 def plot_position_examples(cache: dict[str, dict[str, object]], items_by_split: dict[str, list[dict[str, object]]]) -> None:
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    choices = [("down", "D"), ("dog", "G"), ("seven", "N"), ("zero", "R")]
+    choices = [("bed", "D"), ("dog", "G"), ("seven", "N"), ("zero", "R")]
     figure, axes = plt.subplots(2, 2, figsize=(9.2, 6.2), constrained_layout=True)
     for axis, (word, target) in zip(axes.ravel(), choices):
         item = next(item for item in items_by_split["train"] if item["word"] == word)
