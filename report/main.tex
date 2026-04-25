@@ -76,7 +76,7 @@ Speech Commands provides word labels but not phoneme boundaries. To initialize t
 \begin{equation}
 \hat{t}_i=t_s+\frac{i+0.5}{L}(t_e-t_s).
 \end{equation}
-This weak alignment assumption is used only during training to choose template windows. Test-time detection remains fully position-independent because the detector scans the whole active region.
+This weak alignment assumption is used only during training to choose template windows. Word labels are also used to define positive and negative examples and to compute ground-truth evaluation metrics. They are not used as inputs to the detector at test time: the detector receives only the waveform-derived spectral features and then scans the whole active region.
 
 \subsection{Short-Time Spectrum, MFCC, and DTW}
 For a frame window $h[n]$, the STFT is
@@ -120,7 +120,7 @@ Table~\ref{tab:targets} shows the positive keywords for each target consonant. T
     \end{tabular}
 \end{table*}
 
-For each target consonant, the negative class is sampled from the remaining selected keywords that do not contain that target. The negative examples are subsampled to match the number of positive examples, so every detection problem is balanced.
+For each target consonant, the word label is converted into a binary presence label using the pronunciation table. For example, \textit{dog} is positive for \textit{d} and \textit{g}, but negative for \textit{n} and \textit{r}. The negative class is sampled from the remaining selected keywords that do not contain that target. The negative examples are subsampled to match the number of positive examples, so every detection problem is balanced. During testing, these labels are used only to score the predictions, not to generate them.
 
 \subsection{Assumptions and Preprocessing}
 The experiments use the following assumptions:
