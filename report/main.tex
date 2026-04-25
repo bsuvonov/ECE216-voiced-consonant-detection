@@ -21,7 +21,7 @@ Using Spectrum-Based Methods and an AI Baseline}
 \maketitle
 
 \begin{abstract}
-This paper studies position-independent full-word detection of four voiced consonants, \textit{d}, \textit{g}, \textit{n}, and \textit{r}, using real recordings from Speech Commands v0.02. An onset-only formulation is too narrow for letter-presence detection, because the target consonant may appear at the beginning, middle, or end of the word. A 24-keyword benchmark is constructed so that the targets occur in initial, medial, and final positions. We compare five classical detectors and one AI detector: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide literature and AI comparisons. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 65.17\% and 67.03\%, while the AI detector reaches 86.39\% macro F1 and 86.45\% macro accuracy. The main conclusion is that coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained AI model learns a substantially sharper decision boundary for the full-word task.
+This paper studies position-independent full-word detection of four voiced consonants, \textit{d}, \textit{g}, \textit{n}, and \textit{r}, using real recordings from Speech Commands v0.02. An onset-only formulation is too narrow for letter-presence detection, because the target consonant may appear at the beginning, middle, or end of the word. A 24-keyword benchmark is constructed so that the targets occur in initial, medial, and final positions. We compare five classical detectors and one AI baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide literature and AI comparisons. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 65.17\% and 67.03\%, while the AI baseline reaches 86.39\% macro F1 and 86.45\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
 \end{abstract}
 
 \section{Introduction}
@@ -39,7 +39,7 @@ The study is organized around three questions:
 \begin{enumerate}
     \item How can we extract local spectral templates for consonants when the dataset provides word labels but not phoneme boundaries?
     \item How well do classical spectrum, MFCC, and DTW detectors work when the target consonant may occur anywhere in the word?
-    \item How much improvement is obtained by an AI detector trained directly on whole-word features?
+    \item How does an AI baseline trained directly on whole-word features compare with the classical detectors?
 \end{enumerate}
 
 Our main contribution is a corrected and fully position-independent comparison on real speech data. Instead of assuming all target consonants are word-initial, we construct local target templates from approximate phoneme-position priors and then scan the entire active part of each word at test time.
@@ -49,7 +49,7 @@ Classical speech recognition relied heavily on short-time spectral analysis and 
 
 Modern speech systems increasingly use learned models rather than direct template matching. Hinton \textit{et al.} summarized the impact of deep neural networks on acoustic modeling~\cite{hinton2012dnn}. For limited-vocabulary speech tasks, Sainath and Parada showed that compact neural networks can outperform conventional baselines in keyword spotting~\cite{sainath2015cnn}. We use Speech Commands because it is a standard real dataset for limited-vocabulary speech recognition and keyword spotting~\cite{warden2018speech}.
 
-Our comparison therefore includes MATLAB spectrum methods based on FFT and STFT, literature-style MFCC/DTW methods, and an AI detector trained on the same real speech recordings.
+Our comparison therefore includes MATLAB spectrum methods based on FFT and STFT, literature-style MFCC/DTW methods, and an AI baseline trained on the same real speech recordings.
 
 \section{Problem Formulation and Theory}
 \subsection{Sliding-Window Letter Detection}
@@ -134,7 +134,7 @@ The experiments use the following assumptions:
 Each recording is mean-removed and peak-normalized. The active region is then detected by thresholding short-time energy at 10\% of the utterance maximum. Local detectors use a 100~ms analysis window, a 25~ms STFT frame, 10~ms hop, and 512-point FFT. MFCC features use 26 Mel filters and 13 cepstral coefficients.
 
 \subsection{Implemented Methods}
-We compare six methods. The global FFT, local STFT mean-template, and local STFT k-NN detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are literature baselines, and the MLP is the AI detector used to solve the same detection task and compare against the classical methods. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
+We compare six methods. The global FFT, local STFT mean-template, and local STFT k-NN detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are literature baselines, and the MLP is an AI baseline trained for the same detection task. Before running the experiments, it is not assumed that the MLP should outperform the classical methods; it is included to measure how a learned whole-word classifier behaves under the same train/validation/test protocol. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
 
 \begin{table*}[t]
     \centering
@@ -210,7 +210,7 @@ Figure~\ref{fig:examples} is equally important for validating the corrected task
 
 \section{Results and Comparisons}
 \subsection{Overall Comparison}
-Table~\ref{tab:overall} reports the average precision, recall, F1, and accuracy over the four balanced binary detection tasks. The main qualitative result is clear: the classical detectors are recall-heavy but imprecise, while the AI detector is balanced and substantially stronger.
+Table~\ref{tab:overall} reports the average precision, recall, F1, and accuracy over the four balanced binary detection tasks. The main qualitative result from the experiment is that the classical detectors are recall-heavy but imprecise, while the AI baseline gives more balanced precision and recall.
 
 \begin{table*}[t]
     \centering
@@ -230,7 +230,7 @@ Table~\ref{tab:overall} reports the average precision, recall, F1, and accuracy 
     \end{tabular}
 \end{table*}
 
-The MATLAB spectrum implementation was also run separately for the FFT/STFT detectors. It gave comparable macro F1 values: 66.68\% for global FFT, 66.55\% for local STFT mean-template scanning, and 66.84\% for local STFT k-NN scanning. These values support the same conclusion as Table~\ref{tab:overall}: classical spectrum scanning is useful for spectral interpretation, but it is not as selective as the trained AI detector under weak phoneme alignment.
+The MATLAB spectrum implementation was also run separately for the FFT/STFT detectors. It gave comparable macro F1 values: 66.68\% for global FFT, 66.55\% for local STFT mean-template scanning, and 66.84\% for local STFT k-NN scanning. These values support the same conclusion as Table~\ref{tab:overall}: classical spectrum scanning is useful for spectral interpretation, but in this benchmark it is less selective than the MLP baseline under weak phoneme alignment.
 
 Figure~\ref{fig:overallfig} presents the same comparison graphically. The five classical methods cluster closely together because they all depend on weakly aligned target templates. Once the target is allowed to occur anywhere in the word, coarse positive-template scanning becomes much less selective than in the earlier onset-only formulation.
 
@@ -242,7 +242,7 @@ Figure~\ref{fig:overallfig} presents the same comparison graphically. The five c
 \end{figure}
 
 \subsection{Per-Letter Comparison}
-Figure~\ref{fig:perletter} compares one literature-style baseline (MFCC + DTW), one local-spectrum classical detector (STFT k-NN), and the AI detector on each letter. The AI detector is best for all four consonants:
+Figure~\ref{fig:perletter} compares one literature-style baseline (MFCC + DTW), one local-spectrum classical detector (STFT k-NN), and the AI baseline on each letter. In the test results, the AI baseline obtains the highest F1 for all four consonants:
 \begin{itemize}
     \item \textit{d}: 85.10\% F1,
     \item \textit{g}: 86.38\% F1,
@@ -255,7 +255,7 @@ Among the classical methods, performance is especially limited for letters whose
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{fullword_per_letter_f1.png}
-    \caption{Per-letter detection F1 for a literature baseline, a local-spectrum baseline, and the AI detector.}
+    \caption{Per-letter detection F1 for a literature baseline, a local-spectrum baseline, and the AI baseline.}
     \label{fig:perletter}
 \end{figure}
 
@@ -271,15 +271,15 @@ The classical methods achieve recall around 90--97\%, but precision only around 
 \textbf{3) Literature baselines and spectrum baselines are both informative.}
 MFCC mean-template and MFCC + DTW are the methods reproduced from the speech-recognition literature. Global FFT, local STFT mean-template, and local STFT k-NN are MATLAB spectrum methods based on direct Fourier analysis. In the full-word setting, none of the classical methods dominates decisively; all are constrained by the same lack of exact phoneme boundaries.
 
-\textbf{4) The AI detector is the most effective model in this study.}
-The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. It improves macro F1 from roughly 65--67\% for the classical methods to 86.39\%, and it is also much more balanced in precision and recall.
+\textbf{4) The AI baseline gives the highest scores in this study.}
+The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. In the measured results, its macro F1 is 86.39\%, compared with roughly 65--67\% for the classical methods, and its precision and recall are more balanced.
 
 There are still limitations. The target timing is approximate rather than forced-aligned, and the \textit{g} detector has only two positive keyword types (\textit{dog} and \textit{go}). A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting. Even so, the current design is substantially better aligned with letter-presence detection than an onset-only formulation.
 
 \section{Conclusion}
-We analyzed the spectra of four voiced consonants in MATLAB, implemented MATLAB spectrum-based detectors, reproduced literature-style MFCC/DTW baselines, and trained an AI detector on real speech data. The crucial formulation choice was to treat the task as \emph{position-independent} letter detection inside words rather than onset-only classification.
+We analyzed the spectra of four voiced consonants in MATLAB, implemented MATLAB spectrum-based detectors, reproduced literature-style MFCC/DTW baselines, and trained an AI baseline on real speech data. The crucial formulation choice was to treat the task as \emph{position-independent} letter detection inside words rather than onset-only classification.
 
-Under that formulation, the five classical detectors all show similar high-recall/low-precision behavior, while the AI MLP achieves the strongest overall result with 86.39\% macro F1 and 86.45\% macro accuracy. The main scientific lesson is that Fourier-based spectrum tools remain useful for spectral interpretation and baseline detection, but once target timing becomes uncertain, learned whole-word representations are much more robust than weakly aligned local templates.
+Under that formulation, the five classical detectors all show similar high-recall/low-precision behavior, while the AI MLP gives the highest measured result with 86.39\% macro F1 and 86.45\% macro accuracy. The main scientific lesson is that Fourier-based spectrum tools remain useful for spectral interpretation and baseline detection, but once target timing becomes uncertain, learned whole-word representations can be more robust than weakly aligned local templates.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
