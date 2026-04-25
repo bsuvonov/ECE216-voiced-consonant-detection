@@ -99,10 +99,12 @@ p_c(x)=\sigma\!\left(W_2 \rho(W_1 \tilde{z}(x)+b_1)+b_2\right),
 where $\tilde{z}(x)$ is standardized, $\rho(\cdot)$ is ReLU, and $\sigma(\cdot)$ is the sigmoid function. This model sees the entire word at once and is not limited to one local template.
 
 \section{Dataset and Experimental Setup}
-\subsection{Real Data and Target Selection}
-We use the full Speech Commands v0.02 dataset~\cite{warden2018speech}. From it, we select 24 keywords whose pronunciations cover the target consonants in different positions. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 7,920 recordings in total. The split is speaker-independent: the hexadecimal speaker hash modulo 100 defines train, validation, and test partitions.
+\subsection{Dataset and Target Selection}
+We use the full Speech Commands v0.02 dataset~\cite{warden2018speech}. From it, we select 24 keywords:
+\textit{backward}, \textit{bed}, \textit{bird}, \textit{cat}, \textit{dog}, \textit{down}, \textit{five}, \textit{forward}, \textit{four}, \textit{go}, \textit{house}, \textit{marvin}, \textit{nine}, \textit{no}, \textit{on}, \textit{one}, \textit{right}, \textit{seven}, \textit{three}, \textit{tree}, \textit{up}, \textit{wow}, \textit{yes}, and \textit{zero}.
+Six of these keywords, \textit{cat}, \textit{five}, \textit{house}, \textit{up}, \textit{wow}, and \textit{yes}, do not contain any of the four target consonants and are included as negative examples. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 7,920 recordings in total. The split is speaker-independent: the hexadecimal speaker hash modulo 100 defines train, validation, and test partitions.
 
-Table~\ref{tab:targets} shows the positive keywords for each target consonant. The labels I/M/F denote initial, medial, and final target positions in the approximate pronunciation.
+Table~\ref{tab:targets} shows the positive keywords for each target consonant, not the full 24-keyword benchmark list. The labels I/M/F denote initial, medial, and final target positions in the approximate pronunciation.
 
 \begin{table*}[t]
     \centering
