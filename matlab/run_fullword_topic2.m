@@ -506,7 +506,8 @@ end
 
 function plot_average_spectra(path, averageSpectra, letters, sampleRate, nfft)
 freqAxis = linspace(0, sampleRate / 2, nfft / 2 + 1);
-figure('Visible', 'off');
+figure('Visible', 'off', 'Color', 'w', 'InvertHardcopy', 'off');
+set(gca, 'Color', 'w');
 hold on;
 for idx = 1:numel(letters)
     curve = 20 * log10(averageSpectra(idx, :) / max(averageSpectra(idx, :)) + 1e-8);
@@ -519,6 +520,7 @@ xlabel('Frequency (Hz)');
 ylabel('Normalized magnitude (dB)');
 title('MATLAB Average Local Spectra of Target Consonants');
 legend('Location', 'best');
+set(gca, 'Color', 'w');
 saveas(gcf, path);
 close(gcf);
 end
