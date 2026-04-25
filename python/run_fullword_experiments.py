@@ -791,17 +791,35 @@ def plot_method_comparison(summary: dict[str, dict[str, float]]) -> None:
     f1_values = [100.0 * summary[key]["macro_f1"] for key, _ in methods]
     acc_values = [100.0 * summary[key]["macro_accuracy"] for key, _ in methods]
     x = np.arange(len(methods))
-    width = 0.36
-    plt.figure(figsize=(8.6, 4.6))
-    plt.bar(x - width / 2, f1_values, width=width, label="Macro F1")
-    plt.bar(x + width / 2, acc_values, width=width, label="Macro Accuracy")
-    plt.xticks(x, names, rotation=18, ha="right")
-    plt.ylim(0, 100)
-    plt.ylabel("Percentage")
-    plt.title("Position-Independent Detection Performance")
-    plt.grid(axis="y", alpha=0.25)
-    plt.legend()
-    plt.tight_layout()
+    colors = ["#4C78A8"] * 5 + ["#F58518"]
+
+    figure, (axis_f1, axis_acc) = plt.subplots(
+        2,
+        1,
+        figsize=(8.8, 6.2),
+        sharex=True,
+        gridspec_kw={"height_ratios": [1.0, 1.08]},
+        constrained_layout=True,
+    )
+
+    axis_f1.bar(x, f1_values, color=colors, width=0.62)
+    axis_f1.set_ylim(60, 90)
+    axis_f1.set_ylabel("Macro F1 (%)")
+    axis_f1.set_title("Method Comparison: F1 and Zoomed Accuracy")
+    axis_f1.grid(axis="y", alpha=0.25)
+    for idx, value in enumerate(f1_values):
+        axis_f1.text(idx, value + 0.55, f"{value:.1f}", ha="center", va="bottom", fontsize=8)
+
+    axis_acc.bar(x, acc_values, color=colors, width=0.62)
+    axis_acc.axhline(50.0, color="0.25", linewidth=1.0, linestyle="--", label="Chance level")
+    axis_acc.set_ylim(48, 88)
+    axis_acc.set_ylabel("Macro accuracy (%)")
+    axis_acc.set_xticks(x, names, rotation=18, ha="right")
+    axis_acc.grid(axis="y", alpha=0.25)
+    axis_acc.legend(loc="upper left", fontsize=8)
+    for idx, value in enumerate(acc_values):
+        axis_acc.text(idx, value + 0.6, f"{value:.1f}", ha="center", va="bottom", fontsize=8)
+
     plt.savefig(FIG_DIR / "fullword_method_comparison.png", dpi=200)
     plt.close()
 
