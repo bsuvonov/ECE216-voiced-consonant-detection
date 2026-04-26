@@ -266,18 +266,15 @@ Among the classical methods, performance is especially limited for letters whose
 \end{figure}
 
 \subsection{Discussion}
-The experiments lead to four main conclusions.
+The experiments lead to three main conclusions.
 
-\textbf{1) Letter detection should be position-independent.}
-The target consonants occur in initial, medial, and final positions across the selected keywords. The full-word scan evaluates the entire active region instead of assigning a single fixed target position.
-
-\textbf{2) Weak phoneme alignment is the main bottleneck for classical detectors.}
+\textbf{1) Weak phoneme alignment is the main bottleneck for classical detectors.}
 The classical methods achieve recall around 92--99\%, but precision only around 50--53\%. They often find a spectrally similar local region somewhere in the word, even when the target consonant is absent. This high-recall/low-precision behavior is exactly what one should expect from positive-template scanning with only approximate target localization.
 
-\textbf{3) MFCC/DTW baselines and spectrum baselines are both informative.}
+\textbf{2) MFCC/DTW baselines and spectrum baselines are both informative.}
 MFCC mean-template and MFCC + DTW represent standard speech-recognition feature and alignment methods. Global FFT, local STFT mean-template, and local STFT k-NN are MATLAB spectrum methods based on direct Fourier analysis. In the full-word setting, none of the classical methods dominates decisively; all are constrained by the same lack of exact phoneme boundaries.
 
-\textbf{4) The MLP gives the highest scores in this study.}
+\textbf{3) The MLP gives the highest scores in this study.}
 The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. In the measured results, its macro F1 is 86.25\%, compared with roughly 66--68\% for the classical methods, and its precision and recall are more balanced.
 
 There are still limitations. The target timing is approximate rather than forced-aligned, and the balanced design uses only four positive keyword types per target consonant. A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting.
