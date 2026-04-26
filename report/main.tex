@@ -24,6 +24,10 @@ Voiced-Consonant Detection in Isolated Words}
 This paper presents a comparative evaluation of methods for position-independent full-word detection of four voiced consonants, \textit{d}, \textit{n}, \textit{r}, and \textit{v}, using recordings from Speech Commands v0.02. The target consonant may appear at the beginning, middle, or end of the word, so the detection problem is formulated as letter presence over the whole active word. A 19-keyword benchmark is constructed so that each target consonant has exactly four positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one MLP baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide comparison methods from speech recognition and neural-network modeling. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 66.18\% and 67.85\%, while the MLP reaches 86.25\% macro F1 and 86.46\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
 \end{abstract}
 
+\begin{IEEEkeywords}
+voiced consonant detection, STFT, MFCC, DTW, MLP, Speech Commands
+\end{IEEEkeywords}
+
 \section{Introduction}
 Speech is a time-domain waveform, but many phonetic cues become much clearer after short-time spectral analysis. Sampling, Fourier analysis, and local spectra make physically meaningful structure visible. This work uses those tools as part of a controlled comparison of detectors for deciding whether selected voiced consonants are present in spoken isolated words. Speech Commands v0.02 is a public corpus of short, single-word speech recordings designed for limited-vocabulary keyword-spotting research; here it is used as a source of isolated-word utterances with word labels.
 
@@ -140,7 +144,7 @@ The experiments use the following assumptions:
 Each recording is mean-removed and peak-normalized. The active region is then detected by thresholding short-time energy at 10\% of the utterance maximum. Local detectors use a 100~ms analysis window, a 25~ms STFT frame, 10~ms hop, and 512-point FFT. MFCC features use 26 Mel filters and 13 cepstral coefficients.
 
 \subsection{Implemented Methods}
-We compare six methods. The global FFT, local STFT mean-template, and local STFT k-NN detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are speech-recognition baselines, and the MLP is trained for the same detection task. Before running the experiments, it is not assumed that the MLP should outperform the classical methods; it is included to measure how a learned whole-word classifier behaves under the same train/validation/test protocol. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
+We compare six methods. The global FFT, local STFT mean-template, and local STFT k-NN detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are speech-recognition baselines, and the MLP is trained for the same detection task. The MLP is included as a learned whole-word baseline, not as an a priori preferred method; all methods use the same train/validation/test protocol. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
 
 \begin{table*}[t]
     \centering
@@ -187,7 +191,7 @@ The algorithms below summarize the implemented pipelines.
     \item Keep the best score over all windows and threshold it to obtain the final binary decision.
 \end{enumerate}
 
-\noindent\textbf{Algorithm 4: AI detection}
+\noindent\textbf{Algorithm 4: MLP detection}
 \begin{enumerate}
     \item Convert the entire active word into a resized log-Mel feature map.
     \item Standardize features using training-set statistics.
@@ -198,7 +202,7 @@ The algorithms below summarize the implemented pipelines.
 \section{Spectral Analysis}
 Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonant \textit{d} shows a short transition-like spectrum, \textit{n} concentrates more low-frequency energy because of nasal resonance, \textit{r} has a smoother vowel-like transition, and \textit{v} contributes frication energy from a voiced labiodental constriction.
 
-Figure~\ref{fig:examples} is equally important for validating the task definition. The highlighted windows include different target positions: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. These examples illustrate the full-word scanning problem.
+Figure~\ref{fig:examples} validates the task definition by showing highlighted windows at different target positions: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. These examples illustrate the full-word scanning problem.
 
 \begin{figure}[t]
     \centering
@@ -269,7 +273,7 @@ Among the classical methods, performance is especially limited for letters whose
 The experiments lead to three main conclusions.
 
 \textbf{1) Weak phoneme alignment is the main bottleneck for classical detectors.}
-The classical methods achieve recall around 92--99\%, but precision only around 50--53\%. They often find a spectrally similar local region somewhere in the word, even when the target consonant is absent. This high-recall/low-precision behavior is exactly what one should expect from positive-template scanning with only approximate target localization.
+The classical methods achieve recall around 92--99\%, but precision only around 50--53\%. They often find a spectrally similar local region somewhere in the word, even when the target consonant is absent. This high-recall/low-precision behavior is consistent with positive-template scanning under approximate target localization.
 
 \textbf{2) MFCC/DTW baselines and spectrum baselines are both informative.}
 MFCC mean-template and MFCC + DTW represent standard speech-recognition feature and alignment methods. Global FFT, local STFT mean-template, and local STFT k-NN are MATLAB spectrum methods based on direct Fourier analysis. In the full-word setting, none of the classical methods dominates decisively; all are constrained by the same lack of exact phoneme boundaries.
