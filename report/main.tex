@@ -146,9 +146,27 @@ Each recording is mean-removed and peak-normalized. The active region is then de
 \subsection{Implemented Methods}
 We compare six methods. The global FFT, local STFT mean-template, and local STFT k-NN detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are speech-recognition baselines, and the MLP is trained for the same detection task. The MLP is included as a learned whole-word baseline, not as an a priori preferred method; all methods use the same train/validation/test protocol. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
 
+Figure~\ref{fig:methodmap} connects the method names to the algorithmic blocks. A \emph{method} is a concrete feature and scoring choice, while an \emph{algorithm block} is a reusable procedure. Thus, four local template methods share the same template-building and full-word scanning structure, while differing in feature representation and similarity score.
+
+\begin{figure}[t]
+    \centering
+    \scriptsize
+    \setlength{\fboxsep}{4pt}
+    \fbox{\parbox{0.88\linewidth}{\centering Input: one isolated-word waveform}}\\[1mm]
+    $\downarrow$\\[-1mm]
+    \fbox{\parbox{0.88\linewidth}{\centering \textbf{Algorithm 1}\\normalize, find active speech, form features}}\\[1mm]
+    $\downarrow$\\[-1mm]
+    \emph{Choose one method branch}\\[1mm]
+    \fbox{\parbox{0.88\linewidth}{\textbf{A. Whole-word template}: global FFT; train positive mean FFT; test by cosine threshold.}}\\[1mm]
+    \fbox{\parbox{0.88\linewidth}{\textbf{B. Local template scan}: Algorithms 2--3; MFCC mean, MFCC + DTW, STFT mean, STFT k-NN; train target banks, then scan all windows.}}\\[1mm]
+    \fbox{\parbox{0.88\linewidth}{\textbf{C. Learned full-word classifier}: Algorithm 4; MLP on full-word log-Mel features.}}
+    \caption{Block diagram linking the six implemented methods to the four shared algorithm structures. Algorithm 2 builds classical templates and Algorithm 3 scores test recordings.}
+    \label{fig:methodmap}
+\end{figure}
+
 \begin{table*}[t]
     \centering
-    \caption{Implemented algorithms, feature spaces, assumptions, and decision rules}
+    \caption{Implemented methods, feature spaces, assumptions, and decision rules}
     \label{tab:structures}
     \begin{tabular}{p{2.4cm}p{3.2cm}p{4.7cm}p{5.1cm}}
         \toprule
@@ -164,40 +182,8 @@ We compare six methods. The global FFT, local STFT mean-template, and local STFT
     \end{tabular}
 \end{table*}
 
-\subsection{Pseudo-Code}
-The algorithms below summarize the implemented pipelines.
-
-\noindent\textbf{Algorithm 1: Common preprocessing}
-\begin{enumerate}
-    \item Read the waveform, subtract the mean, and divide by the peak magnitude.
-    \item Compute frame energies on 20~ms windows with 10~ms hop.
-    \item Mark the active region as the contiguous high-energy part of the word.
-    \item Generate overlapping 100~ms analysis windows across the active region.
-\end{enumerate}
-
-\noindent\textbf{Algorithm 2: Build classical target templates}
-\begin{enumerate}
-    \item For each positive training word, map the word to its phoneme sequence.
-    \item Estimate the target-phoneme center using the uniform phoneme-position prior in (4).
-    \item Select the scanned window whose center is closest to that estimated target position.
-    \item Extract the local STFT or MFCC feature and add it to the target template bank.
-\end{enumerate}
-
-\noindent\textbf{Algorithm 3: Full-word classical detection}
-\begin{enumerate}
-    \item Apply Algorithm~1 to the test recording.
-    \item For every scanned local window, compute the chosen feature.
-    \item Compare that feature with the target bank by cosine similarity or DTW.
-    \item Keep the best score over all windows and threshold it to obtain the final binary decision.
-\end{enumerate}
-
-\noindent\textbf{Algorithm 4: MLP detection}
-\begin{enumerate}
-    \item Convert the entire active word into a resized log-Mel feature map.
-    \item Standardize features using training-set statistics.
-    \item Train one binary MLP for each target consonant.
-    \item Use the output probability and a validation-tuned threshold for test-time detection.
-\end{enumerate}
+\subsection{Algorithm Structure}
+The algorithmic structure is summarized in Fig.~\ref{fig:methodmap}. Algorithm~1 is common preprocessing: waveform normalization, active-speech detection, and generation of full-word and local-window features. Algorithm~2 builds classical templates: the global FFT method averages positive whole-word spectra, while the local methods build target-window banks using the approximate phoneme-position prior in (4). Algorithm~3 scores classical test recordings by thresholding either the whole-word FFT cosine score or the best local-window cosine, DTW, or k-NN score. Algorithm~4 trains one standardized full-word log-Mel MLP per target consonant and thresholds its output probability.
 
 \section{Spectral Analysis}
 Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonant \textit{d} shows a short transition-like spectrum, \textit{n} concentrates more low-frequency energy because of nasal resonance, \textit{r} has a smoother vowel-like transition, and \textit{v} contributes frication energy from a voiced labiodental constriction.
