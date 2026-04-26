@@ -83,7 +83,11 @@ For a frame window $h[n]$, the STFT is
 \begin{equation}
 X_m[k]=\sum_{n=0}^{N-1} x[n+mH] h[n] e^{-j2\pi kn/N}.
 \end{equation}
-The local STFT feature used in this study is the average log-magnitude spectrum over a 100~ms analysis window. This keeps the detector directly interpretable in the frequency domain.
+For each scanned 100~ms analysis window, the local STFT feature is constructed by computing the log-magnitude STFT inside that window and then averaging over its short-time frames:
+\begin{equation}
+\phi_{\mathrm{STFT}}(w)=\frac{1}{M_w}\sum_{m=1}^{M_w}\log\left(|X_m[k]|+\epsilon\right).
+\end{equation}
+Thus $\phi_{\mathrm{STFT}}(w)$ is a single spectrum vector describing the local frequency content of one consonant-sized region of the word. The local STFT detectors compare this vector with target-consonant templates using cosine similarity. This keeps the detector directly interpretable in the frequency domain.
 
 MFCCs compress the short-time spectrum into a perceptually motivated cepstral representation. If $E_m[b]$ is the Mel-band energy of frame $m$ and band $b$, then
 \begin{equation}
