@@ -913,7 +913,7 @@ def write_json(path: Path, data: dict) -> None:
         json.dump(data, handle, indent=2, default=json_default)
 
 
-def write_summary(path: Path, summary: dict[str, dict[str, float]], results: dict[str, dict[str, dict[str, object]]]) -> None:
+def format_summary(summary: dict[str, dict[str, float]], results: dict[str, dict[str, dict[str, object]]]) -> str:
     lines = ["Position-independent voiced-consonant detection summary", ""]
     for method_key, label in (
         ("global_fft", "Global FFT"),
@@ -934,7 +934,13 @@ def write_summary(path: Path, summary: dict[str, dict[str, float]], results: dic
         for method_key in ("global_fft", "mfcc_mean", "mfcc_dtw", "stft_mean", "stft_knn", "mlp"):
             pieces.append(f"{method_key}={results[target][method_key]['metrics']['f1']:.4f}")
         lines.append(", ".join(pieces))
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return "\n".join(lines) + "\n"
+
+
+def write_summary(path: Path, summary: dict[str, dict[str, float]], results: dict[str, dict[str, dict[str, object]]]) -> str:
+    text = format_summary(summary, results)
+    path.write_text(text, encoding="utf-8")
+    return text
 
 
 def main() -> None:
@@ -983,7 +989,9 @@ def main() -> None:
         "summary": summary,
     }
     write_json(RESULTS_DIR / "fullword_results.json", output)
-    write_summary(RESULTS_DIR / "summary.txt", summary, results)
+    summary_text = write_summary(RESULTS_DIR / "summary.txt", summary, results)
+    print()
+    print(summary_text, end="")
 
 
 if __name__ == "__main__":
