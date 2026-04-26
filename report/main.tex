@@ -21,13 +21,13 @@ Using Spectrum-Based Methods and an MLP Baseline}
 \maketitle
 
 \begin{abstract}
-This paper studies position-independent full-word detection of four voiced consonants, \textit{d}, \textit{n}, \textit{r}, and \textit{v}, using recordings from Speech Commands v0.02. An onset-only formulation is too narrow for letter-presence detection, because the target consonant may appear at the beginning, middle, or end of the word. A 19-keyword benchmark is constructed so that each target consonant has exactly four positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one MLP baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide comparison methods from speech recognition and neural-network modeling. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 66.18\% and 67.85\%, while the MLP reaches 86.25\% macro F1 and 86.46\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
+This paper studies position-independent full-word detection of four voiced consonants, \textit{d}, \textit{n}, \textit{r}, and \textit{v}, using recordings from Speech Commands v0.02. The target consonant may appear at the beginning, middle, or end of the word, so the detection problem is formulated as letter presence over the whole active word. A 19-keyword benchmark is constructed so that each target consonant has exactly four positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one MLP baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide comparison methods from speech recognition and neural-network modeling. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 66.18\% and 67.85\%, while the MLP reaches 86.25\% macro F1 and 86.46\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
 \end{abstract}
 
 \section{Introduction}
 Speech is a time-domain waveform, but many phonetic cues become much clearer after short-time spectral analysis. Sampling, Fourier analysis, and local spectra make physically meaningful structure visible. This work uses those tools to describe voiced consonants and detect whether they are present in spoken isolated words.
 
-The critical methodological issue is \emph{position}. A detector that only examines the beginning of a word is valid for \textit{d} in \textit{dog}, but not for \textit{d} in \textit{bed} or \textit{r} in \textit{zero}. Therefore, we study position-independent detection of four voiced consonants:
+The critical methodological issue is \emph{position}. A target consonant can occur in different parts of an isolated word, for example \textit{d} in \textit{dog} and \textit{bed}, or \textit{r} in \textit{right} and \textit{zero}. Therefore, we study position-independent detection of four voiced consonants:
 \begin{itemize}
     \item \textit{d}: voiced alveolar stop,
     \item \textit{n}: voiced nasal stop,
@@ -42,7 +42,7 @@ The study is organized around three questions:
     \item How does an MLP classifier trained directly on whole-word features compare with the classical detectors?
 \end{enumerate}
 
-Our main contribution is a fully position-independent comparison on Speech Commands recordings. Instead of assuming all target consonants are word-initial, we construct local target templates from approximate phoneme-position priors and then scan the entire active part of each word at test time.
+Our main contribution is a full-word comparison on Speech Commands recordings. Local target templates are constructed from approximate phoneme-position priors, and each local detector scans the entire active part of the word at test time.
 
 \section{Related Work}
 Classical speech recognition relied heavily on short-time spectral analysis and template matching. Rabiner and Schafer describe the central role of short-time processing in speech analysis~\cite{rabiner1978digital}. Davis and Mermelstein introduced MFCCs as a compact and effective spectral representation for speech recognition~\cite{davis1980comparison}. Sakoe and Chiba proposed DTW to align speech templates under speaking-rate variability~\cite{sakoe1978dynamic}. These ideas motivate the MFCC and DTW baselines used here.
@@ -134,7 +134,7 @@ The experiments use the following assumptions:
     \item Speech Commands provides word labels but not phoneme boundaries.
     \item Active speech can be isolated by an energy threshold on 20~ms frames with 10~ms hop.
     \item Approximate phoneme timing can be estimated by dividing the active region according to pronunciation length.
-    \item Detection should be position-independent at test time, so all local methods scan the full active word rather than only the onset.
+    \item Detection is position-independent at test time, so all local methods scan the full active word.
 \end{itemize}
 
 Each recording is mean-removed and peak-normalized. The active region is then detected by thresholding short-time energy at 10\% of the utterance maximum. Local detectors use a 100~ms analysis window, a 25~ms STFT frame, 10~ms hop, and 512-point FFT. MFCC features use 26 Mel filters and 13 cepstral coefficients.
@@ -198,7 +198,7 @@ The algorithms below summarize the implemented pipelines.
 \section{Spectral Analysis}
 Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonant \textit{d} shows a short transition-like spectrum, \textit{n} concentrates more low-frequency energy because of nasal resonance, \textit{r} has a smoother vowel-like transition, and \textit{v} contributes frication energy from a voiced labiodental constriction.
 
-Figure~\ref{fig:examples} is equally important for validating the task definition. The highlighted windows are not confined to the beginning of the word: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. This illustrates why the detector must scan the full active word rather than only the onset.
+Figure~\ref{fig:examples} is equally important for validating the task definition. The highlighted windows include different target positions: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. These examples illustrate the full-word scanning problem.
 
 \begin{figure}[t]
     \centering
@@ -269,7 +269,7 @@ Among the classical methods, performance is especially limited for letters whose
 The experiments lead to four main conclusions.
 
 \textbf{1) Letter detection should be position-independent.}
-A detector restricted to the word onset would miss valid cases such as \textit{d} in \textit{bed}, \textit{n} in \textit{seven}, or \textit{r} in \textit{zero}. The full-word scan avoids that error by evaluating the entire active region.
+The target consonants occur in initial, medial, and final positions across the selected keywords. The full-word scan evaluates the entire active region instead of assigning a single fixed target position.
 
 \textbf{2) Weak phoneme alignment is the main bottleneck for classical detectors.}
 The classical methods achieve recall around 92--99\%, but precision only around 50--53\%. They often find a spectrally similar local region somewhere in the word, even when the target consonant is absent. This high-recall/low-precision behavior is exactly what one should expect from positive-template scanning with only approximate target localization.
@@ -280,10 +280,10 @@ MFCC mean-template and MFCC + DTW represent standard speech-recognition feature 
 \textbf{4) The MLP gives the highest scores in this study.}
 The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. In the measured results, its macro F1 is 86.25\%, compared with roughly 66--68\% for the classical methods, and its precision and recall are more balanced.
 
-There are still limitations. The target timing is approximate rather than forced-aligned, and the balanced design uses only four positive keyword types per target consonant. A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting. Even so, the current design is substantially better aligned with letter-presence detection than an onset-only formulation.
+There are still limitations. The target timing is approximate rather than forced-aligned, and the balanced design uses only four positive keyword types per target consonant. A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting.
 
 \section{Conclusion}
-This work analyzed the spectra of four voiced consonants in MATLAB, implemented MATLAB spectrum-based detectors, evaluated MFCC/DTW baselines, and trained an MLP on Speech Commands recordings. The task is formulated as \emph{position-independent} letter detection inside words rather than onset-only classification.
+This work analyzed the spectra of four voiced consonants in MATLAB, implemented MATLAB spectrum-based detectors, evaluated MFCC/DTW baselines, and trained an MLP on Speech Commands recordings. The task is formulated as \emph{position-independent} letter detection inside words.
 
 Under that formulation, the five classical detectors all show similar high-recall/low-precision behavior, while the MLP gives the highest measured result with 86.25\% macro F1 and 86.46\% macro accuracy. Overall, Fourier-based spectrum tools remain useful for spectral interpretation and baseline detection, but once target timing becomes uncertain, learned whole-word representations can be more robust than weakly aligned local templates.
 
