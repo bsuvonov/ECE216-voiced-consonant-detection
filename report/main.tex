@@ -21,7 +21,7 @@ Voiced-Consonant Detection in Isolated Words}
 \maketitle
 
 \begin{abstract}
-This paper presents a comparative evaluation of methods for position-independent full-word detection of four voiced consonants, \textit{d}, \textit{n}, \textit{r}, and \textit{v}, using recordings from Speech Commands v0.02. The target consonant may appear at the beginning, middle, or end of the word, so the detection problem is formulated as letter presence over the whole active word. A 19-keyword benchmark is constructed so that each target consonant has exactly four positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one MLP baseline: global FFT template matching, MFCC mean-template scanning, MFCC + dynamic time warping (DTW), local STFT mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small multilayer perceptron (MLP) operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide comparison methods from speech recognition and neural-network modeling. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 66.18\% and 67.85\%, while the MLP reaches 86.25\% macro F1 and 86.46\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
+This paper presents a comparative evaluation of methods for position-independent full-word detection of four voiced consonants, \textit{d}, \textit{n}, \textit{r}, and \textit{v}, using recordings from Speech Commands v0.02. The target consonant may appear at the beginning, middle, or end of the word, so the detection problem is formulated as letter presence over the whole active word. A 19-keyword benchmark is constructed so that each target consonant has exactly four positive keyword types while the targets still occur in initial, medial, and final positions across the benchmark. We compare five classical detectors and one multilayer perceptron (MLP) baseline: global fast Fourier transform (FFT) template matching, Mel-frequency cepstral coefficient (MFCC) mean-template scanning, MFCC + dynamic time warping (DTW), local short-time Fourier transform (STFT) mean-template scanning, local STFT $k$-nearest-neighbor (k-NN) scanning, and a small MLP operating on full-word log-Mel features. The FFT/STFT spectrum detectors are implemented in MATLAB, while the MFCC/DTW and MLP detectors provide comparison methods from speech recognition and neural-network modeling. On balanced speaker-independent test sets, the classical methods achieve macro F1 between 66.18\% and 67.85\%, while the MLP reaches 86.25\% macro F1 and 86.46\% macro accuracy. In these experiments, coarse template detectors have high recall but poor precision under word-level labels and weak phoneme alignment, whereas the trained MLP gives a sharper full-word decision boundary.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -42,8 +42,8 @@ The critical methodological issue is \emph{position}. A target consonant can occ
 The comparative study is organized around three questions:
 \begin{enumerate}
     \item How can local spectral templates be extracted for consonants in word-level recordings?
-    \item How well do classical spectrum, MFCC, and DTW detectors work when the target consonant may occur anywhere in the word?
-    \item How does an MLP classifier trained directly on whole-word features compare with the classical detectors?
+    \item How well do classical spectrum, Mel-frequency cepstral coefficient (MFCC), and dynamic time warping (DTW) detectors work when the target consonant may occur anywhere in the word?
+    \item How does a multilayer perceptron (MLP) classifier trained directly on whole-word features compare with the classical detectors?
 \end{enumerate}
 
 The contribution is a controlled comparison of six detectors on the same 19-keyword Speech Commands benchmark, with identical letter labels, speaker-independent splits, and metrics. Local target templates are constructed from approximate phoneme-position priors, and each local detector scans the entire active part of the word at test time.
@@ -53,7 +53,7 @@ Classical speech recognition relied heavily on short-time spectral analysis and 
 
 Modern speech systems increasingly use learned models rather than direct template matching. Hinton \textit{et al.} summarized the impact of deep neural networks on acoustic modeling~\cite{hinton2012dnn}. For limited-vocabulary speech tasks, Sainath and Parada showed that compact neural networks can outperform conventional baselines in keyword spotting~\cite{sainath2015cnn}. Speech Commands was introduced by Warden as a public benchmark for limited-vocabulary keyword spotting and has been widely used to evaluate isolated-word speech recognition methods~\cite{warden2018speech}.
 
-Our comparison therefore includes MATLAB spectrum methods based on FFT and STFT, MFCC/DTW baselines, and an MLP trained on the same Speech Commands recordings.
+Our comparison therefore includes MATLAB spectrum methods based on the fast Fourier transform (FFT) and short-time Fourier transform (STFT), MFCC/DTW baselines, and an MLP trained on the same Speech Commands recordings.
 
 \section{Problem Formulation and Theory}
 \subsection{Sliding-Window Letter Detection}
@@ -76,14 +76,14 @@ where $\phi(\cdot)$ is the chosen local feature map and $\mathrm{sim}(\cdot,\cdo
 with threshold $\tau_c$ chosen on the validation set.
 
 \subsection{Approximate Phoneme-Position Prior}
-Speech Commands provides word labels but not phoneme boundaries. To initialize target templates, we map each selected keyword to a simple ARPABET pronunciation and approximate the target-phoneme center by a uniform partition of the active word. If a word has $L$ phonemes and the target occurs at zero-based phoneme index $i$, we estimate its center as
+Speech Commands provides word labels but not phoneme boundaries. To initialize target templates, we map each selected keyword to a simple ARPABET (ARPA phonetic alphabet) pronunciation and approximate the target-phoneme center by a uniform partition of the active word. If a word has $L$ phonemes and the target occurs at zero-based phoneme index $i$, we estimate its center as
 \begin{equation}
 \hat{t}_i=t_s+\frac{i+0.5}{L}(t_e-t_s).
 \end{equation}
 This weak alignment assumption is used only during training to choose template windows. Word labels are also used to define positive and negative examples and to compute ground-truth evaluation metrics. They are not used as inputs to the detector at test time: the detector receives only the waveform-derived spectral features and then scans the whole active region.
 
 \subsection{Short-Time Spectrum, MFCC, and DTW}
-For a frame window $h[n]$, the STFT is
+For a frame window $h[n]$, the short-time Fourier transform (STFT) is
 \begin{equation}
 X_m[k]=\sum_{n=0}^{N-1} x[n+mH] h[n] e^{-j2\pi kn/N}.
 \end{equation}
@@ -93,18 +93,18 @@ For each scanned 100~ms analysis window, the local STFT feature is constructed b
 \end{equation}
 Thus $\phi_{\mathrm{STFT}}(w)$ is a single spectrum vector describing the local frequency content of one consonant-sized region of the word. The local STFT detectors compare this vector with target-consonant templates using cosine similarity. This keeps the detector directly interpretable in the frequency domain.
 
-MFCCs compress the short-time spectrum into a perceptually motivated cepstral representation. If $E_m[b]$ is the Mel-band energy of frame $m$ and band $b$, then
+Mel-frequency cepstral coefficients (MFCCs) compress the short-time spectrum into a perceptually motivated cepstral representation. If $E_m[b]$ is the Mel-band energy of frame $m$ and band $b$, then
 \begin{equation}
 c_m[q]=\sum_{b=0}^{B-1} \log E_m[b]\cos\!\left(\frac{\pi(b+1/2)q}{B}\right).
 \end{equation}
-DTW then compares two MFCC sequences by the minimum dynamic-programming path cost under local step constraints~\cite{sakoe1978dynamic}. In our detector, DTW is applied between every scanned test window and a small bank of representative target templates.
+Dynamic time warping (DTW) then compares two MFCC sequences by the minimum dynamic-programming path cost under local step constraints~\cite{sakoe1978dynamic}. In our detector, DTW is applied between every scanned test window and a small bank of representative target templates.
 
 \subsection{MLP Detector}
-For the MLP method, each full word is converted into a resized log-Mel spectrogram vector $z(x)$. We train one binary MLP per target consonant:
+For the multilayer perceptron (MLP) method, each full word is converted into a resized log-Mel spectrogram vector $z(x)$. We train one binary MLP per target consonant:
 \begin{equation}
 p_c(x)=\sigma\!\left(W_2 \rho(W_1 \tilde{z}(x)+b_1)+b_2\right),
 \end{equation}
-where $\tilde{z}(x)$ is standardized, $\rho(\cdot)$ is ReLU, and $\sigma(\cdot)$ is the sigmoid function. This model sees the entire word at once and is not limited to one local template.
+where $\tilde{z}(x)$ is standardized, $\rho(\cdot)$ is the rectified linear unit (ReLU), and $\sigma(\cdot)$ is the sigmoid function. This model sees the entire word at once and is not limited to one local template.
 
 \section{Dataset and Experimental Setup}
 \subsection{Dataset and Target Selection}
@@ -144,7 +144,7 @@ The experiments use the following assumptions:
 Each recording is mean-removed and peak-normalized. The active region is then detected by thresholding short-time energy at 10\% of the utterance maximum. Local detectors use a 100~ms analysis window, a 25~ms STFT frame, 10~ms hop, and 512-point FFT. MFCC features use 26 Mel filters and 13 cepstral coefficients.
 
 \subsection{Implemented Methods}
-We compare six methods. The global FFT, local STFT mean-template, and local STFT k-NN detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are speech-recognition baselines, and the MLP is trained for the same detection task. The MLP is included as a learned whole-word baseline, not as an a priori preferred method; all methods use the same train/validation/test protocol. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
+We compare six methods. The global FFT, local STFT mean-template, and local STFT $k$-nearest-neighbor (k-NN) detectors form the MATLAB spectrum-based implementation. MFCC mean-template and MFCC + DTW are speech-recognition baselines, and the MLP is trained for the same detection task. The MLP is included as a learned whole-word baseline, not as an a priori preferred method; all methods use the same train/validation/test protocol. Table~\ref{tab:structures} summarizes the models, assumptions, and decision rules.
 
 Figure~\ref{fig:methodmap} connects the method names to the algorithmic blocks. A \emph{method} is a concrete feature and scoring choice, while an \emph{algorithm block} is a reusable procedure. Thus, four local template methods share the same template-building and full-word scanning structure, while differing in feature representation and similarity score.
 
