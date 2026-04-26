@@ -785,7 +785,7 @@ def plot_method_comparison(summary: dict[str, dict[str, float]]) -> None:
         ("mfcc_dtw", "MFCC + DTW"),
         ("stft_mean", "STFT Mean"),
         ("stft_knn", "STFT k-NN"),
-        ("mlp", "AI MLP"),
+        ("mlp", "MLP"),
     ]
     names = [label for _, label in methods]
     f1_values = [100.0 * summary[key]["macro_f1"] for key, _ in methods]
@@ -819,7 +819,7 @@ def plot_method_comparison(summary: dict[str, dict[str, float]]) -> None:
 
 def plot_per_letter_f1(results: dict[str, dict[str, dict[str, object]]]) -> None:
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    methods = [("mfcc_dtw", "MFCC + DTW"), ("stft_knn", "STFT k-NN"), ("mlp", "AI MLP")]
+    methods = [("mfcc_dtw", "MFCC + DTW"), ("stft_knn", "STFT k-NN"), ("mlp", "MLP")]
     targets = [TARGET_LABELS[target] for target in TARGET_PHONEMES]
     x = np.arange(len(targets))
     width = 0.25
@@ -921,7 +921,7 @@ def format_summary(summary: dict[str, dict[str, float]], results: dict[str, dict
         ("mfcc_dtw", "MFCC + DTW"),
         ("stft_mean", "STFT mean-template"),
         ("stft_knn", "STFT k-NN"),
-        ("mlp", "AI MLP"),
+        ("mlp", "MLP classifier"),
     ):
         lines.append(
             f"{label}: macro F1={summary[method_key]['macro_f1']:.4f}, "

@@ -5,7 +5,7 @@ MFCC mean-template: macro F1=0.6785, macro accuracy=0.5503
 MFCC + DTW: macro F1=0.6672, macro accuracy=0.5208
 STFT mean-template: macro F1=0.6665, macro accuracy=0.5292
 STFT k-NN: macro F1=0.6618, macro accuracy=0.5315
-AI MLP: macro F1=0.8625, macro accuracy=0.8646
+MLP classifier: macro F1=0.8625, macro accuracy=0.8646
 
 Per-letter F1
 d, global_fft=0.6705, mfcc_mean=0.6671, mfcc_dtw=0.6648, stft_mean=0.6667, stft_knn=0.6671, mlp=0.8639

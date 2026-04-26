@@ -7,7 +7,7 @@ This repository contains the report and experiment code for position-independent
 - `report/main.pdf`: final compiled report.
 - `report/main.tex`: LaTeX source for the report.
 - `matlab/run_fullword_topic2.m`: MATLAB FFT/STFT spectrum-based detectors.
-- `python/run_fullword_experiments.py`: full experiment pipeline, including MFCC/DTW and AI MLP comparisons.
+- `python/run_fullword_experiments.py`: full experiment pipeline, including MFCC/DTW and MLP comparisons.
 - `python/run_experiments.py`: wrapper for the full Python experiment pipeline.
 - `results/summary.txt`: Python experiment summary.
 - `results/matlab_fullword_classical_metrics.txt`: MATLAB spectrum-detector summary.
