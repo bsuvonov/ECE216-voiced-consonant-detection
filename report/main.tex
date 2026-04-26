@@ -42,7 +42,7 @@ The study is organized around three questions:
     \item How does an AI baseline trained directly on whole-word features compare with the classical detectors?
 \end{enumerate}
 
-Our main contribution is a corrected and fully position-independent comparison on Speech Commands recordings. Instead of assuming all target consonants are word-initial, we construct local target templates from approximate phoneme-position priors and then scan the entire active part of each word at test time.
+Our main contribution is a fully position-independent comparison on Speech Commands recordings. Instead of assuming all target consonants are word-initial, we construct local target templates from approximate phoneme-position priors and then scan the entire active part of each word at test time.
 
 \section{Related Work}
 Classical speech recognition relied heavily on short-time spectral analysis and template matching. Rabiner and Schafer describe the central role of short-time processing in speech analysis~\cite{rabiner1978digital}. Davis and Mermelstein introduced MFCCs as a compact and effective spectral representation for speech recognition~\cite{davis1980comparison}. Sakoe and Chiba proposed DTW to align speech templates under speaking-rate variability~\cite{sakoe1978dynamic}. These ideas motivate the literature-based baselines reproduced in this report.
@@ -194,7 +194,7 @@ The algorithms below summarize the implemented pipelines.
 \section{Spectral Analysis}
 Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonant \textit{d} shows a short transition-like spectrum, \textit{n} concentrates more low-frequency energy because of nasal resonance, \textit{r} has a smoother vowel-like transition, and \textit{v} contributes frication energy from a voiced labiodental constriction.
 
-Figure~\ref{fig:examples} is equally important for validating the corrected task definition. The highlighted windows are not confined to the beginning of the word: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. This is the main methodological difference from an onset-only report.
+Figure~\ref{fig:examples} is equally important for validating the task definition. The highlighted windows are not confined to the beginning of the word: \textit{d} is captured at the end of \textit{bed}, \textit{n} at the end of \textit{seven}, \textit{r} in the middle of \textit{zero}, and \textit{v} at the beginning of \textit{visual}. This illustrates why the detector must scan the full active word rather than only the onset.
 
 \begin{figure}[t]
     \centering
@@ -234,7 +234,7 @@ Table~\ref{tab:overall} reports the average precision, recall, F1, and accuracy 
 
 The MATLAB spectrum implementation was also run separately for the FFT/STFT detectors. It gave comparable macro F1 values: 66.65\% for global FFT, 66.02\% for local STFT mean-template scanning, and 65.93\% for local STFT k-NN scanning. These values support the same conclusion as Table~\ref{tab:overall}: classical spectrum scanning is useful for spectral interpretation, but in this benchmark it is less selective than the MLP baseline under weak phoneme alignment.
 
-Figure~\ref{fig:overallfig} presents the same comparison graphically. The five classical methods cluster closely together because they all depend on weakly aligned target templates. Once the target is allowed to occur anywhere in the word, coarse positive-template scanning becomes much less selective than in the earlier onset-only formulation.
+Figure~\ref{fig:overallfig} presents the same comparison graphically. The five classical methods cluster closely together because they all depend on weakly aligned target templates. Once the target is allowed to occur anywhere in the word, coarse positive-template scanning becomes difficult to make selective.
 
 \begin{figure}[t]
     \centering
@@ -262,7 +262,7 @@ Among the classical methods, performance is especially limited for letters whose
 \end{figure}
 
 \subsection{Discussion}
-The corrected experiments lead to four main conclusions.
+The experiments lead to four main conclusions.
 
 \textbf{1) Letter detection should be position-independent.}
 A detector restricted to the word onset would miss valid cases such as \textit{d} in \textit{bed}, \textit{n} in \textit{seven}, or \textit{r} in \textit{zero}. The present report avoids that error by scanning the full active region.
