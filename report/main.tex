@@ -106,7 +106,9 @@ where $\tilde{z}(x)$ is standardized, $\rho(\cdot)$ is the rectified linear unit
 \subsection{Dataset and Target Selection}
 We use the full Speech Commands v0.02 dataset~\cite{warden2018speech}. From it, we select 19 keywords:
 \textit{backward}, \textit{bed}, \textit{bird}, \textit{cat}, \textit{dog}, \textit{five}, \textit{four}, \textit{go}, \textit{house}, \textit{marvin}, \textit{no}, \textit{on}, \textit{right}, \textit{seven}, \textit{up}, \textit{visual}, \textit{wow}, \textit{yes}, and \textit{zero}.
-Six of these keywords, \textit{cat}, \textit{go}, \textit{house}, \textit{up}, \textit{wow}, and \textit{yes}, do not contain any of the four target consonants and are included as target-free negative examples. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 6,270 recordings in total. Speaker-independent splits use the hexadecimal filename token before \texttt{\_nohash\_}: after conversion to an integer and modulo 100, buckets 0--19, 20--29, and 30--99 are test, validation, and training, respectively, giving about 70\%/10\%/20\% train/validation/test before caps.
+Six of these keywords, \textit{cat}, \textit{go}, \textit{house}, \textit{up}, \textit{wow}, and \textit{yes}, do not contain any of the four target consonants and are included as target-free negative examples. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 6,270 recordings in total.
+
+The split is speaker-independent. In Speech Commands filenames such as \texttt{00b01445\_nohash\_0.wav}, the token before \texttt{\_nohash\_} is a hexadecimal speaker identifier. We convert this token to an integer and then take modulo 100, which maps each speaker to a deterministic bucket from 0 to 99. Buckets 0--19 are assigned to the test set, buckets 20--29 to the validation set, and buckets 30--99 to the training set. Thus the split is approximately 70\%/10\%/20\% train/validation/test by speaker before the per-keyword caps are applied. This is different from a random 80\%/20\% utterance split: every recording from the same speaker goes to the same partition, which avoids evaluating on the same speaker identities seen during training.
 
 Table~\ref{tab:targets} shows the positive keywords for each target consonant. The labels I/M/F denote initial, medial, and final target positions in the approximate pronunciation. The positive keyword design is lexically balanced: each target consonant appears in exactly four selected keyword types. Some words contain more than one target consonant, so they can be positive examples for more than one binary detector.
 
@@ -146,12 +148,16 @@ Figure~\ref{fig:methodmap} connects the method names to the algorithmic blocks. 
 
 \begin{figure}[t]
     \centering
-    \scriptsize
-    \setlength{\fboxsep}{3pt}
-    \fbox{\parbox{0.88\linewidth}{\centering Input waveform $\rightarrow$ \textbf{Algorithm 1}: normalize, find active speech, form features}}\\[-0.5mm]
-    \fbox{\parbox{0.88\linewidth}{\textbf{A. Whole-word template}: global FFT; train positive mean FFT; test by cosine threshold.}}\\[-0.5mm]
-    \fbox{\parbox{0.88\linewidth}{\textbf{B. Local template scan}: Algorithms 2--3; MFCC mean, MFCC + DTW, STFT mean, STFT k-NN; train target banks, then scan all windows.}}\\[-0.5mm]
-    \fbox{\parbox{0.88\linewidth}{\textbf{C. Learned full-word classifier}: Algorithm 4; MLP on full-word log-Mel features.}}
+    \small
+    \setlength{\fboxsep}{4pt}
+    \fbox{\parbox{0.88\linewidth}{\centering Input: one isolated-word waveform}}\\[1mm]
+    $\downarrow$\\[-1mm]
+    \fbox{\parbox{0.88\linewidth}{\centering \textbf{Algorithm 1: common preprocessing}\\mean removal, peak normalization, active-speech detection, full-word features, and local scanning windows}}\\[1mm]
+    $\downarrow$\\[-1mm]
+    \emph{Choose one method branch}\\[1mm]
+    \fbox{\parbox{0.88\linewidth}{\textbf{A. Whole-word template}\\Method: global FFT template. Train one positive whole-word spectrum template per target; test by cosine similarity and validation-tuned threshold.}}\\[1mm]
+    \fbox{\parbox{0.88\linewidth}{\textbf{B. Local template scan}\\Algorithms 2--3. Methods: MFCC mean-template, MFCC + DTW, local STFT mean-template, and local STFT k-NN. Train target-window template banks; test by scanning all active-word windows and thresholding the best score.}}\\[1mm]
+    \fbox{\parbox{0.88\linewidth}{\textbf{C. Learned full-word classifier}\\Algorithm 4. Method: MLP classifier. Train one binary network on full-word log-Mel features; test by thresholding the output probability.}}
     \caption{Block diagram linking the six implemented methods to the four shared algorithm structures. Algorithm 2 builds classical templates and Algorithm 3 scores test recordings.}
     \label{fig:methodmap}
 \end{figure}
@@ -175,7 +181,13 @@ Figure~\ref{fig:methodmap} connects the method names to the algorithmic blocks. 
 \end{table*}
 
 \subsection{Algorithm Structure}
-The algorithmic structure is summarized in Fig.~\ref{fig:methodmap}. Algorithm~1 is common preprocessing: waveform normalization, active-speech detection, and generation of full-word and local-window features. Algorithm~2 builds classical templates: the global FFT method averages positive whole-word spectra, while the local methods build target-window banks using the approximate phoneme-position prior in (4). Algorithm~3 scores classical test recordings by thresholding either the whole-word FFT cosine score or the best local-window cosine, DTW, or k-NN score. Algorithm~4 trains one standardized full-word log-Mel MLP per target consonant and thresholds its output probability.
+The algorithmic structure is summarized in Fig.~\ref{fig:methodmap}. Algorithm~1 is common preprocessing: waveform normalization, active-speech detection, and generation of both full-word features and local scanning windows. This block is shared by all six methods.
+
+Algorithm~2 builds classical templates. For the global FFT method, the positive training recordings are represented by whole-word log spectra and averaged to form one target template. For the local methods, positive words are first mapped to their pronunciation strings, the approximate target position is estimated using (4), and the closest 100~ms local window is extracted. The selected local windows form either mean templates, representative DTW templates, or a k-NN template bank.
+
+Algorithm~3 scores classical test recordings. The global FFT branch computes one cosine similarity score between the test word and the target template. The local branches scan all active-word windows and keep the best target score over time. The score is maximum cosine similarity for mean-template matching, negative minimum DTW distance for MFCC + DTW, and best top-$k$ average cosine similarity for local STFT k-NN. In all cases, the final threshold is selected on the validation set.
+
+Algorithm~4 is the MLP branch. It converts the active word into a resized full-word log-Mel vector, standardizes it using training-set statistics, trains one binary MLP per target consonant, and uses a validation-tuned probability threshold for the final decision.
 
 \section{Spectral Analysis}
 Figure~\ref{fig:spectra} shows the average local spectra extracted from the estimated target windows. Even with weak phoneme alignment, the targets remain distinguishable. The stop consonant \textit{d} shows a short transition-like spectrum, \textit{n} concentrates more low-frequency energy because of nasal resonance, \textit{r} has a smoother vowel-like transition, and \textit{v} contributes frication energy from a voiced labiodental constriction.
@@ -253,7 +265,7 @@ MFCC mean-template and MFCC + DTW represent standard speech-recognition feature 
 \textbf{3) The MLP gives the highest scores in this study.}
 The MLP sees the entire log-Mel representation of the word and learns nonlinear boundaries between positive and negative examples. In the measured results, its macro F1 is 86.25\%, compared with roughly 66--68\% for the classical methods, and its precision and recall are more balanced.
 
-The main limitation is that target timing is approximate rather than forced-aligned, and the balanced design uses only four positive keyword types per target consonant.
+There are still limitations. The target timing is approximate rather than forced-aligned, so the local template banks may include neighboring vowel or transition energy. The balanced design also uses only four positive keyword types per target consonant, which makes the comparison controlled but limits lexical diversity. A phoneme-aligned corpus would allow a cleaner study of purely acoustic consonant spotting, while a larger keyword set would test whether the observed precision gap remains under broader word variation.
 
 \section{Conclusion}
 This work analyzed the spectra of four voiced consonants in MATLAB, implemented MATLAB spectrum-based detectors, evaluated MFCC/DTW baselines, and trained an MLP on Speech Commands recordings. The task is formulated as \emph{position-independent} letter detection inside words.
