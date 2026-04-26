@@ -595,7 +595,6 @@ def build_target_banks(
                 axis=0,
             )
         ).astype(np.float32),
-        "average_local_spectrum": np.mean(all_spectra_matrix, axis=0).astype(np.float32),
     }
 
 
@@ -755,26 +754,6 @@ def aggregate_method_results(results: dict[str, dict[str, dict[str, object]]]) -
             "macro_recall": float(np.mean(recalls)),
         }
     return summary
-
-
-def plot_average_spectra(average_spectra: dict[str, np.ndarray]) -> None:
-    FIG_DIR.mkdir(parents=True, exist_ok=True)
-    frequency_axis = np.fft.rfftfreq(NFFT_LOCAL, d=1.0 / SAMPLE_RATE)
-    plt.figure(figsize=(8.2, 4.8))
-    for target in TARGET_PHONEMES:
-        average = average_spectra[target]
-        average_db = 20.0 * np.log10(average / (np.max(average) + 1e-8) + 1e-8)
-        plt.plot(frequency_axis, average_db, linewidth=2, label=TARGET_LABELS[target])
-    plt.xlim(0, 4000)
-    plt.ylim(-40, 1)
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Normalized magnitude (dB)")
-    plt.title("Average Local Spectra of Four Voiced Consonants")
-    plt.grid(True, alpha=0.25)
-    plt.legend(title="Target")
-    plt.tight_layout()
-    plt.savefig(FIG_DIR / "fullword_average_local_spectra.png", dpi=200)
-    plt.close()
 
 
 def plot_method_comparison(summary: dict[str, dict[str, float]]) -> None:
@@ -948,13 +927,10 @@ def main() -> None:
     cache = build_feature_cache(items_by_split)
 
     results: dict[str, dict[str, dict[str, object]]] = {}
-    average_spectra = {}
-
     for target in TARGET_PHONEMES:
         print(f"evaluating target {TARGET_LABELS[target]}")
         datasets = build_balanced_detector_sets(items_by_split, target)
         banks = build_target_banks(target, datasets["train"]["items"], cache)
-        average_spectra[target] = banks["average_local_spectrum"]
 
         results[target] = {
             "metadata": {
@@ -973,7 +949,6 @@ def main() -> None:
 
     summary = aggregate_method_results(results)
 
-    plot_average_spectra(average_spectra)
     plot_method_comparison(summary)
     plot_per_letter_f1(results)
     plot_position_examples(cache, items_by_split)
