@@ -25,7 +25,7 @@ This paper presents a comparative evaluation of methods for position-independent
 \end{abstract}
 
 \section{Introduction}
-Speech is a time-domain waveform, but many phonetic cues become much clearer after short-time spectral analysis. Sampling, Fourier analysis, and local spectra make physically meaningful structure visible. This work uses those tools as part of a controlled comparison of detectors for deciding whether selected voiced consonants are present in spoken isolated words.
+Speech is a time-domain waveform, but many phonetic cues become much clearer after short-time spectral analysis. Sampling, Fourier analysis, and local spectra make physically meaningful structure visible. This work uses those tools as part of a controlled comparison of detectors for deciding whether selected voiced consonants are present in spoken isolated words. Speech Commands v0.02 is a public corpus of short, single-word speech recordings designed for limited-vocabulary keyword-spotting research; here it is used as a source of isolated-word utterances with word labels.
 
 The critical methodological issue is \emph{position}. A target consonant can occur in different parts of an isolated word, for example \textit{d} in \textit{dog} and \textit{bed}, or \textit{r} in \textit{right} and \textit{zero}. Therefore, we study position-independent detection of four voiced consonants:
 \begin{itemize}
@@ -47,7 +47,7 @@ The contribution is a controlled comparison of six detectors on the same 19-keyw
 \section{Related Work}
 Classical speech recognition relied heavily on short-time spectral analysis and template matching. Rabiner and Schafer describe the central role of short-time processing in speech analysis~\cite{rabiner1978digital}. Davis and Mermelstein introduced MFCCs as a compact and effective spectral representation for speech recognition~\cite{davis1980comparison}. Sakoe and Chiba proposed DTW to align speech templates under speaking-rate variability~\cite{sakoe1978dynamic}. These ideas motivate the MFCC and DTW baselines used here.
 
-Modern speech systems increasingly use learned models rather than direct template matching. Hinton \textit{et al.} summarized the impact of deep neural networks on acoustic modeling~\cite{hinton2012dnn}. For limited-vocabulary speech tasks, Sainath and Parada showed that compact neural networks can outperform conventional baselines in keyword spotting~\cite{sainath2015cnn}. We use Speech Commands because it is a standard dataset for limited-vocabulary speech recognition and keyword spotting~\cite{warden2018speech}.
+Modern speech systems increasingly use learned models rather than direct template matching. Hinton \textit{et al.} summarized the impact of deep neural networks on acoustic modeling~\cite{hinton2012dnn}. For limited-vocabulary speech tasks, Sainath and Parada showed that compact neural networks can outperform conventional baselines in keyword spotting~\cite{sainath2015cnn}. Speech Commands was introduced by Warden as a public benchmark for limited-vocabulary keyword spotting and has been widely used to evaluate isolated-word speech recognition methods~\cite{warden2018speech}.
 
 Our comparison therefore includes MATLAB spectrum methods based on FFT and STFT, MFCC/DTW baselines, and an MLP trained on the same Speech Commands recordings.
 
