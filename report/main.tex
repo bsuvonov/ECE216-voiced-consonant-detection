@@ -63,9 +63,9 @@ w_m[n] = x[n+t_m], \quad m=1,\dots,M.
 \end{equation}
 For a target consonant $c$, a template bank $B_c=\{b_{c,1},\dots,b_{c,K_c}\}$ is built from training recordings. A generic scan detector uses
 \begin{equation}
-S_c(x)=\max_m \max_{b\in B_c} \mathrm{sim}(\phi(w_m),b),
+S_c(x)=\max_m g_c(\phi(w_m),B_c),
 \end{equation}
-where $\phi(\cdot)$ is the chosen local feature map and $\mathrm{sim}(\cdot,\cdot)$ is cosine similarity. The final decision is
+where $\phi(\cdot)$ is the chosen local feature map and $g_c$ is the method-dependent bank score: maximum cosine similarity, negative DTW distance, or top-$k$ average cosine similarity. The final decision is
 \begin{equation}
 \hat{y}_c(x)=
 \begin{cases}
@@ -85,11 +85,11 @@ This weak alignment assumption is used only during training to choose template w
 \subsection{Short-Time Spectrum, MFCC, and DTW}
 For a frame window $h[n]$, the short-time Fourier transform (STFT) is
 \begin{equation}
-X_m[k]=\sum_{n=0}^{N-1} x[n+mH] h[n] e^{-j2\pi kn/N}.
+X_{w,r}[k]=\sum_{n=0}^{N-1} w[n+rH] h[n] e^{-j2\pi kn/N}.
 \end{equation}
 For each scanned 100~ms analysis window, the local STFT feature is constructed by computing the log-magnitude STFT inside that window and then averaging over its short-time frames:
 \begin{equation}
-\phi_{\mathrm{STFT}}(w)=\frac{1}{M_w}\sum_{m=1}^{M_w}\log\left(|X_m[k]|+\epsilon\right).
+\phi_{\mathrm{STFT}}(w)[k]=\frac{1}{M_w}\sum_{r=1}^{M_w}\log\left(|X_{w,r}[k]|+\epsilon\right).
 \end{equation}
 Thus $\phi_{\mathrm{STFT}}(w)$ is a single spectrum vector describing the local frequency content of one consonant-sized region of the word. The local STFT detectors compare this vector with target-consonant templates using cosine similarity. This keeps the detector directly interpretable in the frequency domain.
 
@@ -238,13 +238,7 @@ Figure~\ref{fig:overallfig} presents the same comparison graphically. The five c
 \end{figure}
 
 \subsection{Per-Letter Comparison}
-Figure~\ref{fig:perletter} compares one MFCC/DTW baseline, one local-spectrum classical detector (STFT k-NN), and the MLP on each letter. In the test results, the MLP obtains the highest F1 for all four consonants:
-\begin{itemize}
-    \item \textit{d}: 86.39\% F1,
-    \item \textit{n}: 80.63\% F1,
-    \item \textit{r}: 88.98\% F1,
-    \item \textit{v}: 89.00\% F1.
-\end{itemize}
+Figure~\ref{fig:perletter} compares one MFCC/DTW baseline, one local-spectrum classical detector (STFT k-NN), and the MLP on each letter. In the test results, the MLP obtains the highest F1 for all four consonants: 86.39\% for \textit{d}, 80.63\% for \textit{n}, 88.98\% for \textit{r}, and 89.00\% for \textit{v}.
 
 Among the classical methods, performance is especially limited for letters whose target windows are hard to isolate with only word-level supervision. This is expected: the classical detectors know how the target should look locally, but they do not learn a global representation of the entire word.
 
