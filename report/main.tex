@@ -107,7 +107,7 @@ where $\tilde{z}(x)$ is standardized, $\rho(\cdot)$ is the rectified linear unit
 
 \section{Dataset and Experimental Setup}
 \subsection{Dataset and Target Selection}
-We use the full Speech Commands v0.02 dataset~\cite{warden2018speech}. From it, we select 23 keywords:
+We use recordings from the Speech Commands v0.02 corpus~\cite{warden2018speech}. From it, we select 23 keywords:
 \textit{backward}, \textit{bed}, \textit{bird}, \textit{cat}, \textit{dog}, \textit{down}, \textit{five}, \textit{forward}, \textit{four}, \textit{go}, \textit{house}, \textit{marvin}, \textit{nine}, \textit{no}, \textit{on}, \textit{right}, \textit{seven}, \textit{three}, \textit{up}, \textit{visual}, \textit{wow}, \textit{yes}, and \textit{zero}.
 Six of these keywords, \textit{cat}, \textit{go}, \textit{house}, \textit{up}, \textit{wow}, and \textit{yes}, do not contain any of the four target consonants and are included as target-free negative examples. To keep the computation comparable across all methods, each keyword is capped at 150 training recordings, 60 validation recordings, and 120 test recordings, giving 7,590 recordings in total.
 
