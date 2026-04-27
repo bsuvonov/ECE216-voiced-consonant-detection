@@ -1,14 +1,14 @@
 Position-independent voiced-consonant detection summary
 
-Global FFT: macro F1=0.6682, macro accuracy=0.5073
-MFCC mean-template: macro F1=0.6785, macro accuracy=0.5503
-MFCC + DTW: macro F1=0.6672, macro accuracy=0.5208
-STFT mean-template: macro F1=0.6665, macro accuracy=0.5292
-STFT k-NN: macro F1=0.6618, macro accuracy=0.5315
-MLP classifier: macro F1=0.8625, macro accuracy=0.8646
+Global FFT: macro F1=0.6630, macro accuracy=0.5122
+MFCC mean-template: macro F1=0.6714, macro accuracy=0.5598
+MFCC + DTW: macro F1=0.6716, macro accuracy=0.5295
+STFT mean-template: macro F1=0.6662, macro accuracy=0.5066
+STFT k-NN: macro F1=0.6640, macro accuracy=0.5149
+MLP classifier: macro F1=0.8587, macro accuracy=0.8580
 
 Per-letter F1
-d, global_fft=0.6705, mfcc_mean=0.6671, mfcc_dtw=0.6648, stft_mean=0.6667, stft_knn=0.6671, mlp=0.8639
-n, global_fft=0.6667, mfcc_mean=0.6681, mfcc_dtw=0.6707, stft_mean=0.6667, stft_knn=0.6470, mlp=0.8063
-r, global_fft=0.6690, mfcc_mean=0.6941, mfcc_dtw=0.6667, stft_mean=0.6667, stft_knn=0.6625, mlp=0.8898
-v, global_fft=0.6667, mfcc_mean=0.6848, mfcc_dtw=0.6667, stft_mean=0.6661, stft_knn=0.6706, mlp=0.8900
+d, global_fft=0.6576, mfcc_mean=0.6667, mfcc_dtw=0.6698, stft_mean=0.6667, stft_knn=0.6667, mlp=0.8383
+n, global_fft=0.6601, mfcc_mean=0.6595, mfcc_dtw=0.6788, stft_mean=0.6660, stft_knn=0.6622, mlp=0.8406
+r, global_fft=0.6676, mfcc_mean=0.6873, mfcc_dtw=0.6670, stft_mean=0.6673, stft_knn=0.6667, mlp=0.8920
+v, global_fft=0.6667, mfcc_mean=0.6719, mfcc_dtw=0.6707, stft_mean=0.6648, stft_knn=0.6605, mlp=0.8639

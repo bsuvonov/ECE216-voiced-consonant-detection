@@ -1,6 +1,6 @@
 # ECE216 Voiced Consonant Detection
 
-This repository contains the report and experiment code for position-independent detection of voiced consonants in isolated words. The study focuses on the consonants `d`, `n`, `r`, and `v`, using a balanced 19-keyword subset of Speech Commands v0.02 with four positive keyword types per target consonant.
+This repository contains the report and experiment code for position-independent detection of voiced consonants in isolated words. The study focuses on the consonants `d`, `n`, `r`, and `v`, using a 23-keyword subset of Speech Commands v0.02. The expanded benchmark uses six positive keyword types for `d`, `n`, and `r`, and all four available positive keyword types for `v`.
 
 ## Contents
 

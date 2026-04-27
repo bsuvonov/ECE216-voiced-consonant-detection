@@ -48,15 +48,19 @@ WORD_PHONEMES = {
     "bird": ["B", "ER", "D"],
     "cat": ["K", "AE", "T"],
     "dog": ["D", "AO", "G"],
+    "down": ["D", "AW", "N"],
     "five": ["F", "AY", "V"],
+    "forward": ["F", "AO", "R", "W", "ER", "D"],
     "four": ["F", "AO", "R"],
     "go": ["G", "OW"],
     "house": ["HH", "AW", "S"],
     "marvin": ["M", "AA", "R", "V", "IH", "N"],
+    "nine": ["N", "AY", "N"],
     "no": ["N", "OW"],
     "on": ["AA", "N"],
     "right": ["R", "AY", "T"],
     "seven": ["S", "EH", "V", "AH", "N"],
+    "three": ["TH", "R", "IY"],
     "up": ["AH", "P"],
     "visual": ["V", "IH", "ZH", "UW", "AH", "L"],
     "wow": ["W", "AW"],
@@ -840,38 +844,54 @@ def plot_position_examples(cache: dict[str, dict[str, object]], items_by_split: 
     choices = [("bed", "D"), ("seven", "N"), ("zero", "R"), ("visual", "V")]
     figure, axes = plt.subplots(2, 2, figsize=(9.2, 6.2), constrained_layout=True)
     for axis, (word, target) in zip(axes.ravel(), choices):
-        item = next(item for item in items_by_split["train"] if item["word"] == word)
+        candidates = [item for item in items_by_split["train"] if item["word"] == word]
+        durations = np.asarray(
+            [
+                cache[str(item["path"])]["active_bounds"][1] - cache[str(item["path"])]["active_bounds"][0]
+                for item in candidates
+            ],
+            dtype=np.float32,
+        )
+        median_duration = float(np.median(durations))
+        item = candidates[int(np.argmin(np.abs(durations - median_duration)))]
         signal = normalize_signal(read_wav(item["path"]))
         cached = cache[str(item["path"])]
         start, end = cached["active_bounds"]
         active = signal[start:end]
         magnitude = np.log1p(stft_magnitude(active)).T
         time_axis = np.arange(magnitude.shape[1]) * HOP_MS * 1000.0
+        display_end_ms = time_axis[-1] + FRAME_MS * 1000.0
         freq_axis = np.fft.rfftfreq(NFFT_LOCAL, d=1.0 / SAMPLE_RATE)
         axis.imshow(
             magnitude,
             origin="lower",
             aspect="auto",
-            extent=[0.0, time_axis[-1] + FRAME_MS * 1000.0, freq_axis[0], freq_axis[-1]],
+            extent=[0.0, display_end_ms, freq_axis[0], freq_axis[-1]],
             cmap="magma",
         )
+        axis.set_xlim(0.0, display_end_ms)
         axis.set_ylim(0, 4000)
         axis.set_xlabel("Time (ms)")
         axis.set_ylabel("Frequency (Hz)")
         axis.set_title(f"{TARGET_LABELS[target]} in '{word}'")
         win_start, win_end = example_target_window(cached, word, target)
         rect_start_ms = (win_start - start) / SAMPLE_RATE * 1000.0
-        rect_width_ms = (win_end - win_start) / SAMPLE_RATE * 1000.0
+        rect_end_ms = min((win_end - start) / SAMPLE_RATE * 1000.0, display_end_ms)
+        rect_start_ms = max(rect_start_ms, 0.0)
+        rect_width_ms = max(rect_end_ms - rect_start_ms, 0.0)
         axis.add_patch(
             patches.Rectangle(
                 (rect_start_ms, 0.0),
                 rect_width_ms,
                 4000.0,
-                linewidth=1.8,
+                linewidth=2.4,
                 edgecolor="white",
-                facecolor="none",
+                facecolor="white",
+                alpha=0.24,
             )
         )
+        axis.axvline(rect_start_ms, color="white", linewidth=2.6)
+        axis.axvline(rect_start_ms + rect_width_ms, color="white", linewidth=2.6)
     figure.suptitle("Representative Full-Word Spectrograms with Detected Target Regions", fontsize=13)
     figure.savefig(FIG_DIR / "fullword_position_examples.png", dpi=200)
     plt.close(figure)

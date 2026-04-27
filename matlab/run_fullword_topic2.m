@@ -72,31 +72,35 @@ summary = summarize_results(results, letters);
 write_summary(fullfile(resultsDir, 'matlab_fullword_classical_metrics.txt'), summary, results, letters);
 save(fullfile(resultsDir, 'matlab_fullword_classical_model.mat'), ...
     'models', 'params', 'targets', 'letters', 'words', 'phonemes', 'summary');
-plot_average_spectra(fullfile(figDir, 'matlab_fullword_average_local_spectra.png'), ...
+plot_average_spectra(fullfile(figDir, 'matlab_fullword_average_local_spectra'), ...
     averageSpectra, letters, sampleRate, params.nfftLocal);
 
 disp(fileread(fullfile(resultsDir, 'matlab_fullword_classical_metrics.txt')));
 end
 
 function [words, phonemes] = word_phonemes()
-words = {'backward', 'bed', 'bird', 'cat', 'dog', 'five', 'four', 'go', ...
-    'house', 'marvin', 'no', 'on', 'right', 'seven', 'up', 'visual', ...
-    'wow', 'yes', 'zero'};
+words = {'backward', 'bed', 'bird', 'cat', 'dog', 'down', 'five', ...
+    'forward', 'four', 'go', 'house', 'marvin', 'nine', 'no', 'on', ...
+    'right', 'seven', 'three', 'up', 'visual', 'wow', 'yes', 'zero'};
 phonemes = struct();
 phonemes.backward = {'B', 'AE', 'K', 'W', 'ER', 'D'};
 phonemes.bed = {'B', 'EH', 'D'};
 phonemes.bird = {'B', 'ER', 'D'};
 phonemes.cat = {'K', 'AE', 'T'};
 phonemes.dog = {'D', 'AO', 'G'};
+phonemes.down = {'D', 'AW', 'N'};
 phonemes.five = {'F', 'AY', 'V'};
+phonemes.forward = {'F', 'AO', 'R', 'W', 'ER', 'D'};
 phonemes.four = {'F', 'AO', 'R'};
 phonemes.go = {'G', 'OW'};
 phonemes.house = {'HH', 'AW', 'S'};
 phonemes.marvin = {'M', 'AA', 'R', 'V', 'IH', 'N'};
+phonemes.nine = {'N', 'AY', 'N'};
 phonemes.no = {'N', 'OW'};
 phonemes.on = {'AA', 'N'};
 phonemes.right = {'R', 'AY', 'T'};
 phonemes.seven = {'S', 'EH', 'V', 'AH', 'N'};
+phonemes.three = {'TH', 'R', 'IY'};
 phonemes.up = {'AH', 'P'};
 phonemes.visual = {'V', 'IH', 'ZH', 'UW', 'AH', 'L'};
 phonemes.wow = {'W', 'AW'};
@@ -499,7 +503,7 @@ for letterIdx = 1:numel(letters)
 end
 end
 
-function plot_average_spectra(path, averageSpectra, letters, sampleRate, nfft)
+function plot_average_spectra(basePath, averageSpectra, letters, sampleRate, nfft)
 freqAxis = linspace(0, sampleRate / 2, nfft / 2 + 1);
 figure('Visible', 'off', 'Color', 'w', 'InvertHardcopy', 'off');
 axisHandle = axes('Color', 'w', 'XColor', 'k', 'YColor', 'k', ...
@@ -519,7 +523,8 @@ title('MATLAB Average Local Spectra of Target Consonants', 'Color', 'k');
 legendHandle = legend('Location', 'best');
 set(legendHandle, 'TextColor', 'k', 'Color', 'w', 'EdgeColor', 'k');
 set(axisHandle, 'Color', 'w', 'XColor', 'k', 'YColor', 'k');
-saveas(gcf, path);
+exportgraphics(gcf, [basePath '.pdf'], 'ContentType', 'vector', ...
+    'BackgroundColor', 'white');
 close(gcf);
 end
 
